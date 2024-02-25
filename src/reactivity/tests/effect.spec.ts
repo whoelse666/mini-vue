@@ -1,10 +1,21 @@
-// import { reactive } from '../src/reactive.ts';
-// import { effect, stop } from '../src/effect.ts';
-import { add } from '../index.ts';
+import { reactive } from "../reactive";
+import { effect } from "../effect";
+// import { add } from '../index.ts';
 
-describe('effect', () => {
-  it('should run the passed function once (wrapped by a effect)', () => {
-    expect(true).toBe(true);
-    expect(add(1, 1)).toBe(2);
+describe("effect", () => {
+  it("happy path", () => {
+    console.log("effect test");
+    const user = reactive({
+      age: 1
+    });
+    let nextAge;
+    effect(() => {
+      console.log(user.age);
+      nextAge = user.age + 1;
+    });
+    expect(nextAge).toBe(2);
+    //update
+    user.age = user.age + 1;
+    // expect(nextAge).toBe(3);
   });
 });
