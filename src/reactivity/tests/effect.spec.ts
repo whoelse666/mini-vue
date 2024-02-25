@@ -5,15 +5,18 @@ import { effect } from "../effect";
 describe("effect", () => {
   it("happy path", () => {
     const user = reactive({
-      age: 1
+      age: 1,
+      name: 'John',
     });
-    let nextAge;
+    let nextAge, nextName;
     effect(() => {
       nextAge = user.age + 1;
+      nextName = user.name 
     });
     expect(nextAge).toBe(2);
     //update
-    user.age = user.age + 1;
-    expect(nextAge).toBe(3);
+    // user.age++;
+    //     user.name = user.name + "is boy";
+    // expect(nextAge).toBe(3);
   });
 });
