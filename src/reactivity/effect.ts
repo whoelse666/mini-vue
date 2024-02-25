@@ -10,7 +10,6 @@ class ReactiveEffect {
 }
 
 export function effect(fn) {
-  console.log("effect test");
   const _effect = new ReactiveEffect(fn);
   _effect.run();
 }
@@ -18,9 +17,6 @@ export function effect(fn) {
 let activeEffect;
 let targetMap = new Map();
 export function track(target, key) {
-  console.log("target,key", target, key);
-  console.log("activeEffect", activeEffect);
-
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -28,14 +24,14 @@ export function track(target, key) {
   }
   let dep = depsMap.get(key);
   if (!dep) {
-    dep = new Set();
+     dep = new Set();
     depsMap.set(key, dep);
   }
-  dep.add(activeEffect);
+
+dep.add(activeEffect);
 }
 
 export function trigger(target, key, value) {
-  console.log("trigger", target, key, value);
   const depsMap = targetMap.get(target);
   const dep = depsMap.get(key);
   if (dep) {
