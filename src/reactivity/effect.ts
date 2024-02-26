@@ -9,9 +9,13 @@ class ReactiveEffect {
   }
 }
 
-export function effect(fn) {
+export function effect(fn, options?) {
   const _effect = new ReactiveEffect(fn);
-  _effect.run();
+  if (options?.scheduler) {
+    return options?.scheduler;
+  } else {
+    _effect.run();
+  }
   return _effect.run.bind(_effect);
 }
 
