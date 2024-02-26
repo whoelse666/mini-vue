@@ -13,10 +13,22 @@ describe("effect", () => {
       nextAge = user.age + 1;
       nextName = user.name;
     });
- expect(nextAge).toBe(2);
+    expect(nextAge).toBe(2);
     //update
     user.age++;
     user.name = user.name + "is boy";
     expect(nextAge).toBe(3);
   });
+
+  it("should return val when call runner", () => {
+    let count = 0;
+    const runner = effect(() => {
+      count++;
+      return  "count"
+    })
+    expect(count).toBe(1)
+    const r = runner()
+    expect(r).toBe('count')
+    expect(count).toBe(2)
+  })
 });

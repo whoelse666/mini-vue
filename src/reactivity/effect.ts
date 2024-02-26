@@ -5,13 +5,14 @@ class ReactiveEffect {
   }
   run() {
     activeEffect = this;
-    this._fn();
+    return this._fn();
   }
 }
 
 export function effect(fn) {
   const _effect = new ReactiveEffect(fn);
   _effect.run();
+  return _effect.run.bind(_effect);
 }
 
 let activeEffect;
@@ -24,11 +25,11 @@ export function track(target, key) {
   }
   let dep = depsMap.get(key);
   if (!dep) {
-     dep = new Set();
+    dep = new Set();
     depsMap.set(key, dep);
   }
 
-dep.add(activeEffect);
+  dep.add(activeEffect);
 }
 
 export function trigger(target, key, value) {
