@@ -13,7 +13,7 @@ describe("effect", () => {
       nextAge = user.age + 1;
       nextName = user.name;
     });
-    expect(nextAge).toBe(2);
+ expect(nextAge).toBe(2);
     //update
     user.age++;
     user.name = user.name + "is boy";
