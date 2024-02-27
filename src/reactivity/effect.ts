@@ -1,7 +1,9 @@
 class ReactiveEffect {
   private _fn: any;
-  constructor(fn) {
+  public scheduler: Function | undefined;
+  constructor(fn, options) {
     this._fn = fn;
+    this.scheduler = options.scheduler;
   }
   run() {
     activeEffect = this;
@@ -10,13 +12,14 @@ class ReactiveEffect {
 }
 
 export function effect(fn, options?) {
-  const _effect = new ReactiveEffect(fn);
+  const _effect = new ReactiveEffect(fn, options);
   if (options?.scheduler) {
     return options?.scheduler;
   } else {
     _effect.run();
   }
-  return _effect.run.bind(_effect);
+  const runner = _effect.run.bind(_effect);
+  return runner;
 }
 
 let activeEffect;
