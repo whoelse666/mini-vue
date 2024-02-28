@@ -2,6 +2,7 @@ class ReactiveEffect {
   private _fn: any;
   public scheduler: Function | undefined;
   deps = [];
+  active = true;
   onStop?: () => void;
   constructor(fn, scheduler) {
     this._fn = fn;
@@ -12,12 +13,22 @@ class ReactiveEffect {
     return this._fn();
   }
   stop() {
-    this.deps.forEach((dep: any) => {
-      dep.delete(this);
-    });
-    if (this.onStop) this.onStop();
+    if (this.active) {
+      cleanupEffect(this);
+      if (this.onStop) this.onStop();
+      this.active = false;
+    }
   }
 }
+
+function cleanupEffect(effect) {
+  effect.deps.forEach((dep: any) => {
+    dep.delete(effect);
+  });
+  effect.deps.length = 0;
+}
+
+
 
 type effectOptions = {
   scheduler?: Function;
