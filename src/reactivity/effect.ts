@@ -23,7 +23,7 @@ class ReactiveEffect {
 
 function cleanupEffect(effect) {
   effect.deps.forEach((dep: any) => {
-    dep.delete(effect);
+        dep.delete(effect);
   });
   effect.deps.length = 0;
 }
