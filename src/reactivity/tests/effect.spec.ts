@@ -33,7 +33,7 @@ describe("effect", () => {
 
   it("scheduler", () => {
     let dummy = 0;
-    let run;
+    let run: any;
     const scheduler = jest.fn(() => {
       run = runner;
     });

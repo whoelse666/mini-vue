@@ -1,7 +1,7 @@
 class ReactiveEffect {
   private _fn: any;
   public scheduler: Function | undefined;
-  constructor(fn, scheduler?: Function) {
+  constructor(fn, scheduler) {
     this._fn = fn;
     this.scheduler = scheduler;
   }
@@ -10,7 +10,6 @@ class ReactiveEffect {
     return this._fn();
   }
 }
-
 type effectOptions = {
   scheduler?: Function;
 };
