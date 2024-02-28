@@ -21,6 +21,7 @@ class ReactiveEffect {
 
 type effectOptions = {
   scheduler?: Function;
+  onStop?: () => void;
 };
 
 export function effect(fn, options: effectOptions = {}) {
