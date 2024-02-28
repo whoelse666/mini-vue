@@ -9,12 +9,14 @@ describe("readonly", () => {
   });
 
   it("should call console.warn when set", () => {
-    // console.warn = vi.fn();
-    // const user = readonly({
-    //   age: 10
-    // });
-
-    // user.age = 11;
-    // expect(console.warn).toHaveBeenCalled();
+    console.warn = jest.fn();
+    const user = readonly({
+      age: 10
+    });
+    expect(console.warn).toBeCalledTimes(0);
+    user.age = 11;
+    expect(console.warn).toHaveBeenCalled();
+    expect(user.age).toBe(10);
+    expect(console.warn).toBeCalledTimes(1);
   });
 });

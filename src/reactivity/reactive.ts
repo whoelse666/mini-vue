@@ -1,6 +1,4 @@
-import { mutableHandlers, readonlyHandlers} from './baseHandlers';
-
-
+import { mutableHandlers, readonlyHandlers } from "./baseHandlers";
 
 export function reactive(target) {
   return new Proxy(target, mutableHandlers);
