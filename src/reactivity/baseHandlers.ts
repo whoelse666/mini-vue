@@ -4,6 +4,7 @@ import { readonly } from "./reactive";
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
+
 function createGetter(isReadonly = false) {
   return function get(target, key) {
     // 收集依赖
@@ -24,12 +25,12 @@ function createSetter() {
   };
 }
 
-function readonlyCreateSetter() {
-  return function set(target) {
-    console.warn(`${target} is readonly`);
-    return true;
-  };
-}
+// function readonlyCreateSetter() {
+//   return function set(target) {
+//     console.warn(`${target} is readonly`);
+//     return true;
+//   };
+// }
 
 export const mutableHandlers = {
   get,
