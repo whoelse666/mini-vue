@@ -1,21 +1,34 @@
+let activeEffect;
+let shouldTrack;
+
 class ReactiveEffect {
   private _fn: any;
   public scheduler: Function | undefined;
-  deps = [];
-  active = true;
+  deps = []; //stop 用到的数组
+  active = true; // 是否为激活状态, stop  后为非激活
   onStop?: () => void;
   constructor(fn, scheduler) {
     this._fn = fn;
     this.scheduler = scheduler;
   }
   run() {
+    //主动调用 runner 可以执行, 不用通过shouldTrack 判断
+    if (!this.active) {
+      return this._fn();
+    }
     activeEffect = this;
+    shouldTrack = false;
+
     return this._fn();
   }
   stop() {
     if (this.active) {
       cleanupEffect(this);
-      if (this.onStop) this.onStop();
+      shouldTrack = true;
+      if (this.onStop) {
+        // stop 的回调函数
+        this.onStop();
+      }
       this.active = false;
     }
   }
@@ -42,9 +55,12 @@ export function effect(fn, options: effectOptions = {}) {
   return runner;
 }
 
-let activeEffect;
 let targetMap = new Map();
 export function track(target, key) {
+  if (shouldTrack) {
+    return;
+  }
+  if (!activeEffect) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -55,7 +71,6 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-  if (!activeEffect) return;
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
 }

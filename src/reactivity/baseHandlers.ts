@@ -7,8 +7,6 @@ const readonlyGet = createGetter(true);
 
 function createGetter(isReadonly = false) {
   return function get(target, key) {
-    console.log("target", target, isReadonly);
-
     /* 只要是proxy只要调用 就会触发getter,不论key 任何值;
    对于reactive 和readonly 参数isReadonly  判断
    所以可以给定isReactive , isReadonly  分别一个key   is_reactive  和  is_Readonly
