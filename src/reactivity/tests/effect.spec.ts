@@ -72,6 +72,7 @@ describe("effect", () => {
     expect(dummy).toBe(2);
     stop(runner);
     // obj.prop = 3;
+    /* obj.prop = obj.prop + 1 , 会触发getter, 在stop清空后,  effect.deps后有添加一个新的依赖,所以又会执行set */
     obj.prop++;
     expect(dummy).toBe(2);
     expect(obj.prop).toBe(3);

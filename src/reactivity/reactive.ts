@@ -20,12 +20,12 @@ export function readonly(target) {
 
 // 导出一个函数，用于判断传入的值是否为响应式
 export function isReactive(value) {
-  // 打印传入的值
-  console.log('value', value)
-  // 返回传入值的响应式属性
+  // 返回传入值的响应式标志位
   return value[ReactiveFlags.IS_REACTIVE]; 
 }
 
+// 导出一个函数，用于判断传入的值是否为只读
 export function isReadonly(value) {
+  // 返回传入值的ReactiveFlags.IS_READONLY属性值
   return value[ReactiveFlags.IS_READONLY]; 
 }
