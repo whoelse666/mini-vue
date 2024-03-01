@@ -2,7 +2,6 @@ import { reactive, isReactive, isReadonly, readonly } from "../reactive";
 
 describe("reactive", () => {
   it("happy path", () => {
-    // expect(true).toBe(true);
     const original = { num: 1 };
     const observed = reactive(original);
     const obj = readonly(original);
