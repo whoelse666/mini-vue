@@ -29,5 +29,6 @@ export function isReactive(value) {
 // 导出一个函数，用于判断传入的值是否为只读
 export function isReadonly(value) {
   // 返回传入值的ReactiveFlags.IS_READONLY属性值
+  // TODO 到测试 不使用 !! 单测不过 bug 
   return !!value[ReactiveFlags.IS_READONLY];
 }
