@@ -16,16 +16,19 @@ export function readonly(target) {
   return new Proxy(target, readonlyHandlers);
 }
 
-
+export function isObject(target) {
+  return typeof target === "object" && target !== null;
+}
 
 // 导出一个函数，用于判断传入的值是否为响应式
 export function isReactive(value) {
-  // 打印传入的值
-  console.log('value', value)
-  // 返回传入值的响应式属性
-  return value[ReactiveFlags.IS_REACTIVE]; 
+  // 返回传入值的响应式标志位
+  return !!value[ReactiveFlags.IS_REACTIVE];
 }
 
+// 导出一个函数，用于判断传入的值是否为只读
 export function isReadonly(value) {
-  return value[ReactiveFlags.IS_READONLY]; 
+  // 返回传入值的ReactiveFlags.IS_READONLY属性值
+  // TODO 到测试 不使用 !! 单测不过 bug 
+  return !!value[ReactiveFlags.IS_READONLY];
 }

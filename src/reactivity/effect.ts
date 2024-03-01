@@ -17,14 +17,15 @@ class ReactiveEffect {
       return this._fn();
     }
     activeEffect = this;
+    shouldTrack = true;
+    const res = this._fn();
     shouldTrack = false;
-
-    return this._fn();
+    return res;
   }
   stop() {
     if (this.active) {
       cleanupEffect(this);
-      shouldTrack = true;
+      // shouldTrack = true;
       if (this.onStop) {
         // stop 的回调函数
         this.onStop();
@@ -57,10 +58,9 @@ export function effect(fn, options: effectOptions = {}) {
 
 let targetMap = new Map();
 export function track(target, key) {
-  if (shouldTrack) {
+  if (!isTracking()) {
     return;
   }
-  if (!activeEffect) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -71,6 +71,9 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep);
   }
+  // 前置优化， 过滤重复activeEffect 
+  if (dep.has(activeEffect)) return;
+
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
 }
@@ -89,4 +92,8 @@ export function trigger(target, key, value) {
 }
 export function stop(runner) {
   runner.effect.stop();
+}
+
+function isTracking() {
+  return shouldTrack && activeEffect;
 }

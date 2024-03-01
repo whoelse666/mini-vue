@@ -6,4 +6,5 @@ mini-vue源码以及单元测试;
 实现 effect 的 onStop 功能;
 实现 readonly 功能
 实现isReactive 和 isReadonly
-feat : 优化 stop 功能
+优化 stop 功能
+feat : 实现 reactive 和 readonly 嵌套对象转换功能
