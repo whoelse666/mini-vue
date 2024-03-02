@@ -1,4 +1,4 @@
-import { reactive, isReactive, isReadonly, readonly } from "../reactive";
+import { reactive, isReactive, isReadonly, readonly, isProxy } from "../reactive";
 
 describe("reactive", () => {
   it("happy path", () => {
@@ -11,6 +11,8 @@ describe("reactive", () => {
 
     expect(isReactive(obj)).toBe(false);
     expect(isReadonly(obj)).toBe(true);
+    expect(isProxy(observed)).toBe(true);
+    
     expect(observed.num).toBe(1);
   });
   it("nested reactives", () => {
