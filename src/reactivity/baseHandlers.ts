@@ -1,11 +1,13 @@
+import { isObject } from "./index";
 import { track, trigger } from "./effect";
-import { ReactiveFlags, isObject, reactive, readonly } from "./reactive";
+import { ReactiveFlags,  reactive, readonly } from "./reactive";
 
 const get = createGetter();
 const set = createSetter();
 const readonlyGet = createGetter(true);
+const shallowReadonlyGet = createGetter(true, true);
 
-function createGetter(isReadonly = false) {
+function createGetter(isReadonly = false, isShallow = false) {
   return function get(target, key) {
     /* 只要是proxy只要调用 就会触发getter,不论key 任何值;
     对于reactive 和readonly 参数isReadonly  判断
@@ -18,6 +20,9 @@ function createGetter(isReadonly = false) {
     }
 
     const res = Reflect.get(target, key);
+    if (isShallow) {
+      return res;
+    }
     if (isObject(res)) {
       return isReadonly ? readonly(res) : reactive(res);
     }
@@ -58,3 +63,15 @@ export const readonlyHandlers = {
     return true;
   }
 };
+
+export const shallowReadonlyHandlers = Object.assign({}, readonlyHandlers, {
+  get: shallowReadonlyGet
+});
+
+// export const shallowReadonlyHandlers = {
+//   get: shallowReadonlyGet,
+//   set(target, key) {
+//     console.warn(`key :"${String(key)}" set 失败，因为 target 是 readonly 类型`, target);
+//     return true;
+//   }
+// };

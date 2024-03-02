@@ -57,7 +57,7 @@ export function effect(fn, options: effectOptions = {}) {
 }
 
 let targetMap = new Map();
-export function track(target, key) {
+export function track(this: any, target, key) {
   if (!isTracking()) {
     return;
   }
@@ -71,29 +71,62 @@ export function track(target, key) {
     dep = new Set();
     depsMap.set(key, dep);
   }
-  // 前置优化， 过滤重复activeEffect 
+  /*   // 前置优化， 过滤重复activeEffect
   if (dep.has(activeEffect)) return;
 
   dep.add(activeEffect);
-  activeEffect.deps.push(dep);
+  activeEffect.deps.push(dep); */
+
+  trackEffects(dep);
 }
 export function trigger(target, key, value) {
   const depsMap = targetMap.get(target);
   const dep = depsMap.get(key);
   if (dep) {
-    for (const effect of dep) {
+    triggerEffects(dep);
+    /*     for (const effect of dep) {
       if (effect.scheduler) {
         effect.scheduler();
       } else {
         effect.run();
       }
-    }
+    } */
   }
 }
+
+// 导出一个函数，用于停止runner
 export function stop(runner) {
+  // 停止runner的effect
   runner.effect.stop();
 }
 
-function isTracking() {
-  return shouldTrack && activeEffect;
+// 导出一个函数，用于判断是否处于追踪状态
+export function isTracking() {
+  // 判断shouldTrack和activeEffect是否都不为undefined
+  return shouldTrack && activeEffect !== undefined;
+}
+
+// 导出一个函数trackEffect，用于跟踪效果
+export function trackEffects(dep: Set<any>) {
+  // 如果dep中已经存在activeEffect，则直接返回
+  // 
+  if (dep.has(activeEffect)) return;
+  // 否则，将value添加到dep中
+  dep.add(activeEffect);
+  // 将dep添加到activeEffect的依赖中
+  activeEffect.deps.push(dep);
+}
+
+//   导出一个函数，用于触发效果
+export function triggerEffects(dep: Set<any>) {
+  // 遍历dep中的每一个效果
+  for (const effect of dep) {
+    // 如果效果中有调度器，则调用调度器
+    if (effect.scheduler) {
+      effect.scheduler();
+    } else {
+      // 否则，直接调用效果
+      effect.run();
+    }
+  }
 }
