@@ -26,9 +26,6 @@ export function shallowReadonly(target) {
   return createReactiveObject(target, shallowReadonlyHandlers);
 }
 
-export function isObject(target) {
-  return typeof target === "object" && target !== null;
-}
 
 // 导出一个函数，用于判断传入的值是否为响应式
 export function isReactive(value) {

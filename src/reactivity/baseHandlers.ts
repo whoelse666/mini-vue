@@ -1,5 +1,6 @@
+import { isObject } from "./index";
 import { track, trigger } from "./effect";
-import { ReactiveFlags, isObject, reactive, readonly } from "./reactive";
+import { ReactiveFlags,  reactive, readonly } from "./reactive";
 
 const get = createGetter();
 const set = createSetter();
