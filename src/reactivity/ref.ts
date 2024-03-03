@@ -61,3 +61,27 @@ export function isRef(value: any) {
 export function unRef(val) {
   return isRef(val) ? val.value : val;
 }
+
+// 导出一个函数，用于代理引用
+export function proxyRefs(objectWithRefs) {
+  // 打印出objectWithRefs
+  console.log("proxyRefs", objectWithRefs);
+  // 返回一个代理对象
+  return new Proxy(objectWithRefs, {
+    get(target, key) {
+      return unRef(Reflect.get(target, key));
+    },
+    // 设置属性值
+    set(target, key, value) {
+      // console.log('target,key,value',target,key,value);
+      // 如果旧的值是ref 并且新的值不是ref
+      if (isRef(target[key]) && !isRef(value)) {
+       // 返回解引用后的值
+       return (target[key].value = value);
+      } else {
+        // 返回反射设置的值
+        return Reflect.set(target, key, value);
+      }
+    }
+  });
+}

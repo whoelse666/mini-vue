@@ -1,6 +1,6 @@
 import { effect } from "../effect";
 import { reactive } from "../reactive";
-import { isRef, ref, unRef } from "../ref";
+import { isRef, proxyRefs, ref, unRef } from "../ref";
 
 describe("ref", () => {
   it("happy path", () => {
@@ -55,7 +55,7 @@ describe("ref", () => {
   it("isRef", () => {
     // 创建一个ref对象
     const a = ref(1);
-    const obj = ref({num:1});
+    const obj = ref({ num: 1 });
     // 创建一个响应式对象
     const user = reactive({ age: 1 });
     // 创建一个普通变量
@@ -81,5 +81,28 @@ describe("ref", () => {
     // 测试unRef函数是否可以正确返回传入的参数
     expect(unRef(obj)).toBe(obj);
     // expect(unRef(aObj)).toBe(aObj);
+  });
+
+ it("proxyRefs", () => {
+    const user = {
+      age: ref(10),
+      name: "牛魔王"
+    };
+    // 创建代理对象
+    const proxyUser = proxyRefs(user);
+    // 断言普通属性值
+    expect(user.age.value).toBe(10);
+    expect(proxyUser.name).toBe("牛魔王");
+    expect(proxyUser.age).toBe(10);
+
+    // set 普通值
+    proxyUser.age = 20;
+    expect(user.age.value).toBe(20);
+    expect(proxyUser.age).toBe(20);
+
+    // set ref值
+    proxyUser.age = ref(30);
+    expect(user.age.value).toBe(30);
+    expect(proxyUser.age).toBe(30);
   });
 });
