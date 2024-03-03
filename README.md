@@ -9,4 +9,7 @@ mini-vue源码以及单元测试;
 优化 stop 功能
 实现 reactive 和 readonly 嵌套对象转换功能
 实现 isProxy 功能
-feat : 实现 ref 功能
+实现 ref 功能
+实现 isRef 和 unRef 功能
+实现 proxyRefs 功能
+feat : 实现 computed 计算属性
