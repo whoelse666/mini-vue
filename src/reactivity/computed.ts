@@ -20,7 +20,7 @@ class ComputedRefImpl {
       this._dirty = false;
       this._value = this._effect.run();
     }
-    console.log("this._value888888888", this._value);
+    console.log("this._value===", this._value);
     return this._value;
   }
 

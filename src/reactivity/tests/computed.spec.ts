@@ -1,3 +1,6 @@
+
+
+
 import { computed } from "../computed";
 import { reactive } from "../reactive";
 // import { vi } from "vitest";
@@ -20,15 +23,27 @@ describe("computed", () => {
       return value.foo;
     });
     const comVal = computed(getter);
+    // 检查comVal.value是否等于1
     expect(getter).not.toHaveBeenCalled();
     expect(comVal.value).toBe(1);
     expect(getter).toHaveBeenCalledTimes(1);
 
+    // 获取值
     comVal.value;
     expect(getter).toHaveBeenCalledTimes(1);
 
+    // 设置值
+    // should not compute until needed
     value.foo = 2;
     expect(getter).toHaveBeenCalledTimes(1);
-    expect(getter).toBe(2);
+
+    // now it should compute
+    expect(comVal.value).toBe(2);
+    expect(getter).toHaveBeenCalledTimes(2);
+
+    // should not compute again
+    comVal.value;
+    expect(getter).toHaveBeenCalledTimes(2);
   });
 });
+
