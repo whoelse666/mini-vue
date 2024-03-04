@@ -12,4 +12,5 @@ mini-vue源码以及单元测试;
 实现 ref 功能
 实现 isRef 和 unRef 功能
 实现 proxyRefs 功能
-feat : 实现 computed 计算属性
+实现 computed 计算属性
+feat :实现初始化 component 主流程
