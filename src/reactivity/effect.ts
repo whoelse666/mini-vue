@@ -18,6 +18,7 @@ export class ReactiveEffect {
     }
     activeEffect = this;
     shouldTrack = true;
+    // ComputedRefImpl-> get-02
     const res = this._fn();
     shouldTrack = false;
     return res;
@@ -57,7 +58,7 @@ export function effect(fn, options: effectOptions = {}) {
 }
 
 let targetMap = new Map();
-export function track(this: any, target, key) {
+export function track(target, key) {
   if (!isTracking()) {
     return;
   }

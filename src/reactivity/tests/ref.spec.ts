@@ -12,7 +12,7 @@ describe("ref", () => {
     const a = ref(1);
     let dummy, num;
     let calls = 0;
-    // 创建一个副作用函数，每次a.value改变时会调用
+    //“(创建一个副作用函数，每次a.value改变时会调用)”
     effect(() => {
       calls++;
       dummy = a.value;
