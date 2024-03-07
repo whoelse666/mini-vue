@@ -110,7 +110,7 @@ export function isTracking() {
 // 导出一个函数trackEffect，用于跟踪效果
 export function trackEffects(dep: Set<any>) {
   // 如果dep中已经存在activeEffect，则直接返回
-  // 
+  //
   if (dep.has(activeEffect)) return;
   // 否则，将value添加到dep中
   dep.add(activeEffect);
@@ -119,7 +119,7 @@ export function trackEffects(dep: Set<any>) {
 }
 
 //   导出一个函数，用于触发效果
-export function triggerEffects(dep: Set<any>) {
+export function triggerEffects(dep) {
   // 遍历dep中的每一个效果
   for (const effect of dep) {
     // 如果效果中有调度器，则调用调度器

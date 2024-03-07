@@ -4,7 +4,7 @@ export default {
   input: "./src/index.ts",
   output: [
     {
-      file: pkg.ejs,
+      file: pkg.cjs,
       // file: "./lib/ejs.js",
       format: "cjs"
     },
