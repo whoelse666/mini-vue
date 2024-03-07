@@ -2,18 +2,19 @@
   "name": "mini-vue",
   "version": "1.0.0",
   "description": "mini-vue源码以及单元测试",
+  "license": "MIT",
   "main": "index.js",
-  "ejs": "./lib/ejs.js",
-  "esm": "./lib/es.js",
+  "cjs": "./lib/guide-mini-vue.cjs.js",
+  "esm": "./lib/guide-mini-vue.esm.js",
   "scripts": {
     "test": "jest",
-    "build": "rollup --config ./rollup.config.mjs"
+    "build": "rollup  --config ./rollup.config.mjs",
+    "build:watch": "rollup  --config ./rollup.config.mjs --watch"
   },
   "keywords": [
     "mini-vue"
   ],
   "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",

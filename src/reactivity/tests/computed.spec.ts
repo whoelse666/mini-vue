@@ -15,6 +15,8 @@ describe("computed", () => {
     expect(age.value).toBe(1);
   });
 
+
+  
   it("should computed is lazily", () => {
     const value = reactive({
       foo: 1
