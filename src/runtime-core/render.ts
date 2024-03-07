@@ -1,69 +1,64 @@
 import { isObject } from "../reactivity/index";
-import { createComponentInstance } from "./component";
+import { createComponentInstance, setupComponent } from "./component";
 
 export function render(vnode, container) {
   patch(vnode, container);
 }
 
+// 函数patch，用于处理vnode和container
+//
 function patch(vnode: any, container: any) {
+  /* TODO :区分 component 和 element */
+  // fixme 如果vnode的类型是字符串, ===vnode 就是element 类型参数
   if (typeof vnode.type === "string") {
+    // 调用processElement函数处理vnode和container
     processElement(vnode, container);
+    //fixme 如果vnode的类型是对象 , === vnode 就是 Component 类型的参数
   } else if (isObject(vnode.type)) {
+    // 调用processComponent函数处理vnode和container
     processComponent(vnode, container);
   }
 }
 
+// 函数processComponent，用于处理组件
 function processComponent(vnode: any, container: any) {
+  // 调用mountComponent函数处理vnode和container
   mountComponent(vnode, container);
 }
 
+// 函数processElement，用于处理元素
 function processElement(vnode: any, container: any) {
+  // 调用mountElement函数处理vnode和container
   mountElement(vnode, container);
 }
 
+// 函数mountComponent，用于处理组件
 function mountComponent(vnode: any, container: any) {
   //  创建组件实例
   const instance = createComponentInstance(vnode);
-  const { render, setup } = instance.type;
-  const newVnode = render();
-  // const setupData = setup();
-  const { props, children } = newVnode;
-  const el = document.createElement(newVnode.type);
-  // set dom props
-  if (isObject(props)) {
-    Object.keys(props).forEach(key => {
-      el.setAttribute(key, props[key]);
-    });
-  }
-
-  // let child: any = document.createDocumentFragment();
-  let child;
-  if (typeof children === "string") {
-    child = document.createTextNode(children);
-  } else if (Array.isArray(children)) {
-    children.forEach(v => {
-      patch(v, el);
-    });
-  }
-  child && el.append(child);
-  container.append(el);
-
-  // setupComponent(instance);
-  // setupRenderEffect(instance, container);
+  setupComponent(instance);
+  setupRenderEffect(instance, container);
 }
 
+// 函数setupRenderEffect，用于设置渲染效果
+function setupRenderEffect(instance: any, container: any) {
+  const subTree = instance.render(); // h()函数返回的
+  patch(subTree, container);
+}
+
+//  处理vnode ->  element
 function mountElement(vnode: any, container: any) {
   const el = document.createElement(vnode.type);
-  const { children } = vnode;
+  const { children, props } = vnode;
   // children
   if (typeof children === "string") {
+    // 文本节点
     el.textContent = children;
   } else if (Array.isArray(children)) {
-    mountChildren(vnode, el);
+    mountChildren(children, el);
   }
 
   // props
-  const { props } = vnode;
   for (const key in props) {
     const val = props[key];
     el.setAttribute(key, val);
@@ -73,11 +68,28 @@ function mountElement(vnode: any, container: any) {
 }
 
 function mountChildren(vnode, container) {
-   vnode.children.forEach(v => {
-     patch(v, container);
-   });
+  vnode.forEach(v => {
+    // 调用patch函数处理v和container
+    patch(v, container);
+  });
 }
 
-function setupRenderEffect(vnode: any, container: any) {
-  console.log("setupRenderEffect");
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
