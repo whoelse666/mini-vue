@@ -16,4 +16,5 @@ mini-vue源码以及单元测试;
 14. 实现 computed 计算属性;
 15. 实现初始化 component 主流程;
 16. 使用 rollup 打包库
-17. feat: 实现初始化 element 主流程
+17. 实现初始化 element 主流程
+18. feat:实现组件代理对象(包含 this. api 的实现原理)
