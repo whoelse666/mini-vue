@@ -14,7 +14,7 @@ export const App = {
       // Array
       [
         h("ol", { class: "red" }, "hi"),
-        h("p", { class: "blue" }, "mini-vue"),
+        h("p", { class: "blue" }, "mini-vue"+ this.msg),
         h(
           "ul",
           {
@@ -28,7 +28,7 @@ export const App = {
 
   setup() {
     return {
-      msg: "666"
+      msg: "代理值"
     };
   }
 };

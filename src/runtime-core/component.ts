@@ -1,4 +1,5 @@
 import { isObject } from "../reactivity/index";
+import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 
 // 导出一个函数，用于创建组件实例
 export function createComponentInstance(vnode) {
@@ -26,6 +27,14 @@ function setupStatefulComponent(instance: any) {
   const { setup } = type;
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup();
+  console.log("vnode", vnode.el);
+
+  const proxy = new Proxy(
+    instance,
+    // { _: instance },
+    PublicInstanceProxyHandlers
+  );
+  instance.proxy = proxy;
   // 调用handleSetupResult函数，传入instance和setupResult
   handleSetupResult(instance, setupResult);
 }
