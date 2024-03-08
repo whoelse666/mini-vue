@@ -27,7 +27,6 @@ function setupStatefulComponent(instance: any) {
   const { setup } = type;
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup();
-  console.log("vnode", vnode.el);
 
   const proxy = new Proxy(
     instance,
@@ -55,6 +54,7 @@ function handleSetupResult(instance: any, setupResult) {
 
 // 函数finishComponent接收一个参数instance，用于完成组件
 function finishComponent(instance: any) {
+  console.log("instance.vnode", instance.vnode);
   // 如果instance的type属性有render方法，则将instance的render属性设置为instance的type属性的render方法
   if (instance.type.render) {
     //  把 render 提高结构层级,简化调用

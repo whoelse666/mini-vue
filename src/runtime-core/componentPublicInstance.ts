@@ -8,5 +8,8 @@ export const PublicInstanceProxyHandlers = {
     if (key in setupState) {
       return setupState[key];
     }
+    if (key === "$el" ) {
+      return  instance.vnode.el
+    }
   }
 };

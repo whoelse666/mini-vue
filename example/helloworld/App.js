@@ -2,6 +2,7 @@ import { h } from "../../lib/guide-mini-vue.esm.js";
 
 export const App = {
   render() {
+    window.self = this;
     return h(
       "div",
       {
@@ -14,7 +15,7 @@ export const App = {
       // Array
       [
         h("ol", { class: "red" }, "hi"),
-        h("p", { class: "blue" }, "mini-vue"+ this.msg),
+        h("p", { class: "blue" }, "mini-vue" + this.msg),
         h(
           "ul",
           {
