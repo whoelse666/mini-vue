@@ -36,14 +36,16 @@ function mountComponent(vnode: any, container: any) {
   //  创建组件实例
   const instance = createComponentInstance(vnode);
   setupComponent(instance);
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, vnode,container);
 }
 
 // 函数setupRenderEffect，用于设置渲染效果
-function setupRenderEffect(instance: any, container: any) {
+function setupRenderEffect(instance: any, vnode,container: any) {
   // const subTree = instance.render(); // h()函数返回
   const subTree = instance.render.call(instance.proxy); // h()函数返回
+  console.log('subTree',subTree);
   patch(subTree, container);
+  vnode.el = subTree.el;
 }
 
 //  处理vnode ->  element

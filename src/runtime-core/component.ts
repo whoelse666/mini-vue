@@ -27,7 +27,6 @@ function setupStatefulComponent(instance: any) {
   const { setup } = type;
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup();
-
   const proxy = new Proxy(
     instance,
     // { _: instance },
