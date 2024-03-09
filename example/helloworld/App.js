@@ -1,4 +1,5 @@
 import { h } from "../../lib/guide-mini-vue.esm.js";
+import { Foo } from "./Foo.js";
 
 export const App = {
   render() {
@@ -14,6 +15,9 @@ export const App = {
       // "hi, mini-vue"
       // Array
       [
+        h(Foo, {
+          count: 1
+        }),
         h("ol", { class: "red" }, "hi"),
         h(
           "p",

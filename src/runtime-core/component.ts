@@ -1,3 +1,4 @@
+import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 
 // 导出一个函数，用于创建组件实例
@@ -16,16 +17,18 @@ export function createComponentInstance(vnode) {
 export function setupComponent(instance: any) {
   //happy path init component data
   // TODO : 1. initProps()  2.initSlots()
+  initProps(instance, instance.vnode.props);
   setupStatefulComponent(instance);
 }
 
 // 函数setupStatefulComponent接收一个参数instance，用于设置状态组件
 // 获取 setup() 返回结果,挂在到instance上
 function setupStatefulComponent(instance: any) {
-  const { type, vnode } = instance;
+  const { type, vnode, props } = instance;
   const { setup } = type;
+  console.log("props", props);
   // 调用setup函数，获取setupResult
-  const setupResult = setup && setup();
+  const setupResult = setup && setup(props);
   const proxy = new Proxy(
     instance,
     // { _: instance },
@@ -59,3 +62,4 @@ function finishComponent(instance: any) {
     instance.render = instance.type.render;
   }
 }
+

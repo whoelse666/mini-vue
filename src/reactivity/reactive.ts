@@ -1,3 +1,4 @@
+import { isObject } from "../shared/index";
 import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from "./baseHandlers";
 
 export const enum ReactiveFlags {
@@ -6,6 +7,10 @@ export const enum ReactiveFlags {
 }
 
 function createReactiveObject(target, baseHandlers) {
+   if (!isObject(target)) {
+     console.warn(`target ${target} 必须是一个对象`);
+     return target;
+   }
   return new Proxy(target, baseHandlers);
 }
 // 创建一个响应式对象
