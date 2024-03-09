@@ -15,7 +15,19 @@ export const App = {
       // Array
       [
         h("ol", { class: "red" }, "hi"),
-        h("p", { class: "blue" }, "mini-vue" + this.msg),
+        h(
+          "p",
+          {
+            class: "blue",
+            onClick: () => {
+              console.log("click");
+            },
+            onMousedown: () => {
+              console.log("onmousedown");
+            }
+          },
+          "mini-vue" + this.msg
+        ),
         h(
           "ul",
           {
