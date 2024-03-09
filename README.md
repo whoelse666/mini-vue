@@ -18,3 +18,4 @@ mini-vue源码以及单元测试;
 16. 使用 rollup 打包库
 17. 实现初始化 element 主流程
 18. 实现组件代理对象(包含 this. api 的实现原理)
+19. coding: 实现 shapeFlags  

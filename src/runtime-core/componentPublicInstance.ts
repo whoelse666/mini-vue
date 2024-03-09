@@ -1,3 +1,8 @@
+const publicPropsMap = {
+  $el: ({ vnode }) => vnode && vnode.el
+  // $props:(ins) => ins.vnode.props,
+};
+
 // 导出一个常量PublicInstanceProxyHandlers，它是一个对象
 export const PublicInstanceProxyHandlers = {
   // 定义一个get方法，接收两个参数：instance和key
@@ -8,8 +13,9 @@ export const PublicInstanceProxyHandlers = {
     if (key in setupState) {
       return setupState[key];
     }
-    if (key === "$el" ) {
-      return  instance.vnode.el
+    const publicGetter = publicPropsMap[key];
+    if (publicGetter) {
+      return publicGetter(instance);
     }
   }
 };
