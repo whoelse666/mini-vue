@@ -1,6 +1,7 @@
 import { isTracking, trackEffects, triggerEffects } from "./effect";
 import { reactive } from "./reactive";
-import { isObject } from "./index";
+import { isObject } from "../shared/index";
+
 
 // 定义RefImpl类
 class RefImpl {

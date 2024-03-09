@@ -1,7 +1,9 @@
 import { h } from "../../lib/guide-mini-vue.esm.js";
+import { Foo } from "./Foo.js";
 
 export const App = {
   render() {
+    window.self = this;
     return h(
       "div",
       {
@@ -13,8 +15,23 @@ export const App = {
       // "hi, mini-vue"
       // Array
       [
+        h(Foo, {
+          count: 1
+        }),
         h("ol", { class: "red" }, "hi"),
-        h("p", { class: "blue" }, "mini-vue"),
+        h(
+          "p",
+          {
+            class: "blue",
+            onClick: () => {
+              console.log("click");
+            },
+            onMousedown: () => {
+              console.log("onmousedown");
+            }
+          },
+          "mini-vue" + this.msg
+        ),
         h(
           "ul",
           {
@@ -28,7 +45,7 @@ export const App = {
 
   setup() {
     return {
-      msg: "666"
+      msg: "代理值"
     };
   }
 };
