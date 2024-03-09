@@ -1,7 +1,8 @@
 import { hasOwn, isObject } from "../shared/index";
 
 const publicPropsMap = {
-  $el: ({ vnode }) => vnode && vnode.el
+  $el: ({ vnode }) => vnode && vnode.el,
+  $slots: (v) => v.slots
   // $props:(ins) => ins.vnode.props,
 };
 
@@ -19,6 +20,7 @@ export const PublicInstanceProxyHandlers = {
       return props[key];
     }
 
+    //props 包括了 slots emits  attributer(id,class...)
     const publicGetter = publicPropsMap[key];
     if (publicGetter) {
       return publicGetter(instance);

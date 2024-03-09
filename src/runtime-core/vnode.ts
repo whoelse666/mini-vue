@@ -14,6 +14,7 @@ export function createVNode(type, props?, children?) {
   const vnode = {
     type,
     props,
+    // slots: children,
     children,
     // 初始设置shapeFlag
     shapeFlag: getShapeFlag(type),

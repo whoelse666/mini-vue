@@ -21,4 +21,5 @@ mini-vue源码以及单元测试;
 19. 实现 shapeFlags  
 20. 实现注册事件功能 
 21. 实现组件 props 功能
-22. feat: 实现组件 emit 功能
+22. 实现组件 emit 功能
+23. feat:实现组件 slots 功能

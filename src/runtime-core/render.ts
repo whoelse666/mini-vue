@@ -37,6 +37,7 @@ function processElement(vnode: any, container: any) {
 function mountComponent(vnode: any, container: any) {
   //  创建组件实例
   const instance = createComponentInstance(vnode);
+  console.log(" 11", instance);
   setupComponent(instance);
   setupRenderEffect(instance, vnode, container);
 }
@@ -60,7 +61,7 @@ function mountElement(vnode: any, container: any) {
   // props
   for (const key in props) {
     const val = props[key];
-    const isOn =  ()=>/^on[A-Z]/.test(key);
+    const isOn = () => /^on[A-Z]/.test(key);
     // if (key.startsWith("on")) {
     if (isOn()) {
       el.addEventListener(key.slice(2).toLowerCase(), val);
