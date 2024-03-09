@@ -12,7 +12,6 @@ function patch(vnode: any, container: any) {
   /* TODO :区分 component 和 element */
   // fixme 如果vnode的类型是字符串, ===vnode 就是element 类型参数
   const { shapeFlag } = vnode;
-
   // if (typeof vnode.type === "string") {
   if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);

@@ -9,9 +9,7 @@ import { ShapeFlags } from "../shared/shapeFlags";
 // 导出一个函数，用于创建虚拟节点
 export function createVNode(type, props?, children?) {
   // 打印出type的表格
-  console.table(type);
   /* 创建虚拟节点结构 */
-
   // 创建一个vnode对象，用于存储虚拟节点的信息
   const vnode = {
     type,

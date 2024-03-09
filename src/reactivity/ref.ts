@@ -1,6 +1,6 @@
 import { isTracking, trackEffects, triggerEffects } from "./effect";
 import { reactive } from "./reactive";
-import { isObject } from "../shared/index";
+import { isObject,hasChanged } from "../shared/index";
 
 
 // 定义RefImpl类
@@ -31,12 +31,14 @@ class RefImpl {
 
   set value(newValue) {
     // Object.is() 静态方法确定两个值是否为相同值。
-    if (!Object.is(this._value, newValue)) {
-      this.rawValue = newValue;
-      this._value = convert(newValue);
-      // 执行依赖
-      triggerEffects(this.dep);
-    }
+    // hasChanged
+    // if (!Object.is(this._value, newValue)) {
+  if (hasChanged(newValue, this._value)) {
+    this.rawValue = newValue;
+    this._value = convert(newValue);
+    // 执行依赖
+    triggerEffects(this.dep);
+  }
   }
 }
 
