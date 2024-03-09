@@ -1,4 +1,3 @@
-import { isObject } from "../reactivity/index";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 
 // 导出一个函数，用于创建组件实例
