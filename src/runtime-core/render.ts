@@ -1,5 +1,6 @@
 import { isObject } from "../shared/index";
 import { ShapeFlags } from "../shared/shapeFlags";
+
 import { createComponentInstance, setupComponent } from "./component";
 
 export function render(vnode, container) {
@@ -9,10 +10,10 @@ export function render(vnode, container) {
 // 函数patch，用于处理vnode和container
 //
 function patch(vnode: any, container: any) {
+  console.log('vnode',vnode);
   /* TODO :区分 component 和 element */
   // fixme 如果vnode的类型是字符串, ===vnode 就是element 类型参数
   const { shapeFlag } = vnode;
-
   // if (typeof vnode.type === "string") {
   if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);
@@ -61,7 +62,7 @@ function mountElement(vnode: any, container: any) {
   // props
   for (const key in props) {
     const val = props[key];
-    const isOn =  ()=>/^on[A-Z]/.test(key);
+    const isOn = () => /^on[A-Z]/.test(key);
     // if (key.startsWith("on")) {
     if (isOn()) {
       el.addEventListener(key.slice(2).toLowerCase(), val);

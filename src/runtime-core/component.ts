@@ -1,5 +1,8 @@
-import { initProps } from "./componentProps";
+import { shallowReadonly } from "../reactivity/reactive";
+import { emit } from "./componentEmits";
+import { initProps,  } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { initSlots } from "./componentSlots";
 
 // 导出一个函数，用于创建组件实例
 export function createComponentInstance(vnode) {
@@ -8,8 +11,13 @@ export function createComponentInstance(vnode) {
     // 将vnode赋值给组件对象
     vnode,
     // 获取vnode的type属性赋值给组件对象
-    type: vnode.type
+    type: vnode.type,
+    setupState: {},
+    props: {},
+    slots: {},
+    emit
   };
+  component.emit = emit.bind(null, component) as any;
   // 返回组件对象
   return component;
 }
@@ -18,23 +26,24 @@ export function setupComponent(instance: any) {
   //happy path init component data
   // TODO : 1. initProps()  2.initSlots()
   initProps(instance, instance.vnode.props);
+  initSlots(instance, instance.vnode.children);
   setupStatefulComponent(instance);
 }
 
 // 函数setupStatefulComponent接收一个参数instance，用于设置状态组件
 // 获取 setup() 返回结果,挂在到instance上
 function setupStatefulComponent(instance: any) {
-  const { type, vnode, props } = instance;
+  const { type, vnode, props, emit } = instance;
   const { setup } = type;
-  console.log("props", props);
-  // 调用setup函数，获取setupResult
-  const setupResult = setup && setup(props);
+
   const proxy = new Proxy(
     instance,
     // { _: instance },
     PublicInstanceProxyHandlers
   );
   instance.proxy = proxy;
+  // 调用setup函数，获取setupResult
+  const setupResult = setup && setup(shallowReadonly(props), { emit });
   // 调用handleSetupResult函数，传入instance和setupResult
   handleSetupResult(instance, setupResult);
 }
@@ -55,11 +64,9 @@ function handleSetupResult(instance: any, setupResult) {
 
 // 函数finishComponent接收一个参数instance，用于完成组件
 function finishComponent(instance: any) {
-  console.log("instance.vnode", instance.vnode);
   // 如果instance的type属性有render方法，则将instance的render属性设置为instance的type属性的render方法
   if (instance.type.render) {
     //  把 render 提高结构层级,简化调用
     instance.render = instance.type.render;
   }
 }
-
