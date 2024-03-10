@@ -1,5 +1,6 @@
 import { isObject } from "../shared/index";
 import { ShapeFlags } from "../shared/shapeFlags";
+
 import { createComponentInstance, setupComponent } from "./component";
 
 export function render(vnode, container) {
@@ -9,6 +10,7 @@ export function render(vnode, container) {
 // 函数patch，用于处理vnode和container
 //
 function patch(vnode: any, container: any) {
+  console.log('vnode',vnode);
   /* TODO :区分 component 和 element */
   // fixme 如果vnode的类型是字符串, ===vnode 就是element 类型参数
   const { shapeFlag } = vnode;
@@ -37,7 +39,6 @@ function processElement(vnode: any, container: any) {
 function mountComponent(vnode: any, container: any) {
   //  创建组件实例
   const instance = createComponentInstance(vnode);
-  console.log(" 11", instance);
   setupComponent(instance);
   setupRenderEffect(instance, vnode, container);
 }
