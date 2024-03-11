@@ -4,16 +4,19 @@ export const App = {
   name: "App",
   render() {
     const app = h("div", {}, "App");
-  let foo = h(Foo, {}, [h("p", {}, "123"), h("p", {}, "567")]);
-    //  foo = h(
-    //   Foo,
-    //   {},
-    //   {
-    //     header: h("p", {}, "123"),
-    //     footer: h("p", {}, "567")
-    //   }
-    // );
-    //  foo = h(Foo, {}, h("p", {}, "123"));
+    // 逐步: 1. 实现单个slot ,  2.多个使用数组, 3.具名插槽,使用对象
+    // let foo = h(Foo, {}, [h("p", {}, "123"), h("p", {}, "567")]);
+    // let  foo = h(Foo, {}, [h("p", {}, "123"), h("p", {}, "567")]);
+
+    let foo = h(
+      Foo,
+      {},
+      {
+        // 作用于插槽,要接受值,采用函数方式接受children 传递的值 
+        header: ({ num }) => h("p", {}, "header-" + num),
+        footer: ({ name }) => h("p", {}, "footer-" + name)
+      }
+    );
     return h("div", {}, [app, foo]);
   },
   setup() {

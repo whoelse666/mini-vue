@@ -5,11 +5,10 @@ export const Foo = {
   },
   render() {
     const foo = h("p", {}, "foo");
-    // /Foo .vnode.children
-    console.log(111, this.$slots);
-    // const renderSlots = Array.isArray(this.$slots) ? h("div", { class: "foo" }, [foo, ...this.$slots]) : h("div", { class: "foo" }, [foo, this.$slots]);
+    // /foo .vnode.children
+    // const renderSlots = array.isArray(this.$slots) ? h("div", { class: "foo" }, [foo, ...this.$slots]) : h("div", { class: "foo" }, [foo, this.$slots]);
     // const renderSlots = h("div", { class: "foo" }, [foo, this.$slots]);
-    return h("div", { class: "foo" }, [foo, renderSlots(this.$slots)]);
+    return h("div", { class: "foo" }, [renderSlots(this.$slots, "footer", { name: "哈利波特帅" }), foo, renderSlots(this.$slots, "header", { num: 99 })]);
     // return h("div", { class: "foo" }, [renderSlots(this.$slots, "header"), foo, renderSlots(this.$slots, "footer")]);
   }
 };
