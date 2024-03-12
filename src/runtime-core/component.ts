@@ -5,7 +5,7 @@ import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
 
 // 导出一个函数，用于创建组件实例
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode, parent) {
   // 创建一个组件对象
   const component = {
     // 将vnode赋值给组件对象
@@ -14,6 +14,8 @@ export function createComponentInstance(vnode) {
     type: vnode.type,
     setupState: {},
     props: {},
+    providers: {},
+    parent,
     slots: {},
     emit
   };
@@ -35,13 +37,13 @@ export function setupComponent(instance: any) {
 function setupStatefulComponent(instance: any) {
   const { type, vnode, props, emit } = instance;
   const { setup } = type;
-
   const proxy = new Proxy(
     instance,
     // { _: instance },
     PublicInstanceProxyHandlers
   );
   instance.proxy = proxy;
+  
   setCurrentInstance(instance);
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup(shallowReadonly(props), { emit });
