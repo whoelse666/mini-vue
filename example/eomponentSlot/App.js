@@ -1,4 +1,4 @@
-import { h } from "../../lib/guide-mini-vue.esm.js";
+import { h, createTextVNode } from "../../lib/guide-mini-vue.esm.js";
 import { Foo } from "./Foo.js";
 export const App = {
   name: "App",
@@ -11,8 +11,8 @@ export const App = {
       Foo,
       {},
       {
-        // 作用于插槽,要接受值,采用函数方式接受children 传递的值 
-        header: ({ num }) => h("p", {}, "header-" + num),
+        // 作用于插槽,要接受值,采用函数方式接受children 传递的值
+        header: ({ num }) => [h("p", {}, "header-" + num), createTextVNode("你好")],
         footer: ({ name }) => h("p", {}, "footer-" + name)
       }
     );

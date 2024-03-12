@@ -11,7 +11,6 @@ export const Foo = {
 
     // return h("div", { class: "foo" }, [renderSlots(this.$slots, "footer", { name: "哈利波特帅" }), foo, renderSlots(this.$slots, "header", { num: 99 })]);
     return h("div", { class: "foo" }, [renderSlots(this.$slots, "footer", { name: "哈利波特帅" }), foo, renderSlots(this.$slots, "header", { num: 99 })]);
-
   }
 };
 
