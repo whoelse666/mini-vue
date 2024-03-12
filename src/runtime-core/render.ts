@@ -45,6 +45,7 @@ function processElement(vnode: any, container: any) {
   mountElement(vnode, container);
 }
 
+
 // 函数mountComponent,用于处理组件
 function mountComponent(vnode: any, container: any) {
   //  创建组件实例
