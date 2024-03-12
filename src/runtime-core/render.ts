@@ -1,7 +1,7 @@
 import { isObject } from "../shared/index";
 import { ShapeFlags } from "../shared/shapeFlags";
 
-import { createComponentInstance, setupComponent } from "./component";
+import { createComponentInstance, getCurrentInstance, setupComponent } from "./component";
 import { Fragment, Text } from "./vnode";
 
 export function render(vnode, container) {
@@ -102,6 +102,7 @@ function setupRenderEffect(instance: any, vnode, container: any) {
 function processFragment(vnode: any, container: any) {
   mountChildren(vnode.children, container);
 }
+
 function processTextVNode(vnode: any, container: any) {
   const el = document.createTextNode(vnode.children);
   vnode.el = el;

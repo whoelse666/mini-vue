@@ -1,6 +1,6 @@
 import { shallowReadonly } from "../reactivity/reactive";
 import { emit } from "./componentEmits";
-import { initProps,  } from "./componentProps";
+import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
 
@@ -42,8 +42,11 @@ function setupStatefulComponent(instance: any) {
     PublicInstanceProxyHandlers
   );
   instance.proxy = proxy;
+  setCurrentInstance(instance);
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup(shallowReadonly(props), { emit });
+  setCurrentInstance(null);
+
   // 调用handleSetupResult函数，传入instance和setupResult
   handleSetupResult(instance, setupResult);
 }
@@ -69,4 +72,14 @@ function finishComponent(instance: any) {
     //  把 render 提高结构层级,简化调用
     instance.render = instance.type.render;
   }
+}
+
+let currentInstance = null;
+export function getCurrentInstance() {
+  return currentInstance;
+}
+
+/* 在setup 中执行getCurrentInstance 获取当前实例后重置为null ,所以在setup()前后设置instance  和重置  */
+export function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
