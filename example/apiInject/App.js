@@ -6,20 +6,18 @@ const Provider = {
   setup() {
     provide("foo", "fooVal");
     provide("bar", "barVal");
-    provide("baz", "bazVal");
+    // provide("baz", "bazVal");
   },
   render() {
-    return h("div", {}, [h("p", {}, "Provider"), h(Consumer)]);
-    // return h("div", {}, [h("p", {}, "Provider"), h(ProviderTwo)]);
+    return h("div", {}, [h("p", {}, "Provider"), h(ProviderTwo)]);
   }
 };
 
-/* const ProviderTwo = {
+const ProviderTwo = {
   name: "ProviderTwo",
   setup() {
     provide("foo", "fooTwo");
     const foo = inject("foo");
-
     return {
       foo
     };
@@ -27,16 +25,16 @@ const Provider = {
   render() {
     return h("div", {}, [h("p", {}, `ProviderTwo foo:${this.foo}`), h(Consumer)]);
   }
-} */
+};
 
 const Consumer = {
   name: "Consumer",
   setup() {
     const foo = inject("foo");
     const bar = inject("bar");
-    const baz = inject("baz", "bazDefault");
-    // const baz = inject("baz", () => "bazDefault");
-    console.log("foo", foo);
+    // const baz = inject("baz", "bazDefault");
+    const baz = inject("baz", () => "bazDefault");
+
     return {
       foo,
       bar,
@@ -44,7 +42,6 @@ const Consumer = {
     };
   },
   render() {
-    console.log("this", this);
     return h("div", {}, `Consumer: - ${this.foo} - ${this.bar}-${this.baz}`);
   }
 };

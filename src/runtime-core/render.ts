@@ -1,6 +1,4 @@
-import { isObject } from "../shared/index";
-import { ShapeFlags } from "../shared/shapeFlags";
-
+import { ShapeFlags } from "../shared/shapeFlag";
 import { createComponentInstance, getCurrentInstance, setupComponent } from "./component";
 import { Fragment, Text } from "./vnode";
 
@@ -102,14 +100,13 @@ function setupRenderEffect(instance: any, initialVNode, container: any) {
    render:ƒ render()
     parent
     props
-    providers
+    provides
     proxy: Proxy(Object)
     setupState
     slots
     type
     vnode
   } */
-  console.log("instance", instance);
   patch(subTree, container, instance);
   // 2. $el-> 挂在el
   initialVNode.el = subTree.el;

@@ -1,4 +1,4 @@
-import { ShapeFlags } from "../shared/shapeFlags";
+import { ShapeFlags } from "../shared/shapeFlag";
 // export const enum ShapeFlags {
 //   ELEMENT = 1, // 0001
 //   STATEFUL_COMPONENT = 1 << 1, // 0010
