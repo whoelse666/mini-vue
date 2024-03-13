@@ -25,4 +25,5 @@ mini-vue源码以及单元测试;
 23. 实现组件 slots 功能
 24. 实现 Fragment 和 Text 类型节点 
 25. 实现 getCurrentInstance
-26. feat:实现provide-inject 功能
+26. 实现provide-inject 功能
+27. feat:实现自定义渲染器 custom renderer
