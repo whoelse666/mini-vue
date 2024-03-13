@@ -3,6 +3,7 @@
 */
 
 import { createRender } from "../runtime-core/render";
+import { createVNode } from "../runtime-core/vnode";
 
 // 创建一个函数，用于创建元素
 export function createElement(type) {
@@ -33,6 +34,23 @@ const renderObj: any = createRender({
   insert
 });
 
+// TODO  createRender-01
+/* // 方法1 
+  export function createApp(rootComponent) {
+    return {
+      mount(rootContainer) {
+        // 创建 vnode
+        const vnode = createVNode(rootComponent);
+        // 创建 dom
+        renderObj.render(vnode, rootContainer);
+      }
+    };
+  } */
+
+/* // 方法2 
+export function createApp(...args) {
+  return renderObj.createApp(...args);
+} */
 export function createApp(...args) {
   return renderObj.createApp(...args);
 }

@@ -131,6 +131,9 @@ export function createRender(options) {
     container.append(el);
   }
 
-  //createAppAPI 依赖render ，所以在这里调用获取render 的值
+  // TODO  createRender-01
+  // createAppAPI 依赖render ，所以在这里调用获取render 的值
+  // 方法1   return { render };
+  // 方法2  return { createApp: createAppAPI(render) };
   return { createApp: createAppAPI(render) };
 }
