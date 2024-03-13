@@ -1,11 +1,13 @@
 import { shallowReadonly } from "../reactivity/reactive";
 import { emit } from "./componentEmits";
-import { initProps,  } from "./componentProps";
+import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
 
 // 导出一个函数，用于创建组件实例
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode, parent) {
+  console.log("parent", parent,parent?.provides);
+
   // 创建一个组件对象
   const component = {
     // 将vnode赋值给组件对象
@@ -14,6 +16,8 @@ export function createComponentInstance(vnode) {
     type: vnode.type,
     setupState: {},
     props: {},
+    provides: parent ? parent.provides : {},
+    parent,
     slots: {},
     emit
   };
@@ -35,15 +39,18 @@ export function setupComponent(instance: any) {
 function setupStatefulComponent(instance: any) {
   const { type, vnode, props, emit } = instance;
   const { setup } = type;
-
   const proxy = new Proxy(
     instance,
     // { _: instance },
     PublicInstanceProxyHandlers
   );
   instance.proxy = proxy;
+
+  setCurrentInstance(instance);
   // 调用setup函数，获取setupResult
   const setupResult = setup && setup(shallowReadonly(props), { emit });
+  setCurrentInstance(null);
+
   // 调用handleSetupResult函数，传入instance和setupResult
   handleSetupResult(instance, setupResult);
 }
@@ -69,4 +76,14 @@ function finishComponent(instance: any) {
     //  把 render 提高结构层级,简化调用
     instance.render = instance.type.render;
   }
+}
+
+let currentInstance = null;
+export function getCurrentInstance() {
+  return currentInstance;
+}
+
+/* 在setup 中执行getCurrentInstance 获取当前实例后重置为null ,所以在setup()前后设置instance  和重置  */
+export function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
