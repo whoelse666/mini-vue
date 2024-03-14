@@ -3,7 +3,7 @@ import { createComponentInstance, setupComponent } from "./component";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
-export function createRender(options) {
+export function createRenderer(options) {
   const { createElement, insert, patchProp } = options;
 
   function render(vnode, container) {
@@ -131,7 +131,7 @@ export function createRender(options) {
     container.append(el);
   }
 
-  // TODO  createRender-01
+  // TODO  createRenderer-01
   // createAppAPI 依赖render ，所以在这里调用获取render 的值
   // 方法1   return { render };
   // 方法2  return { createApp: createAppAPI(render) };

@@ -1,9 +1,9 @@
-/* createRender 作用： 可以让用户 传入不同的 
+/* createRenderer 作用： 可以让用户 传入不同的 
 函数执行不同平台的api， 
 */
-
-import { createRender } from "../runtime-core/render";
+import { createRenderer } from "../runtime-core";
 import { createVNode } from "../runtime-core/vnode";
+export * from "../runtime-core";
 
 // 创建一个函数，用于创建元素
 export function createElement(type) {
@@ -28,13 +28,13 @@ export function patchProp(el, key, val) {
 export function insert(el, parent) {
   parent.append(el);
 }
-const renderObj: any = createRender({
+const renderObj: any = createRenderer({
   createElement,
   patchProp,
   insert
 });
 
-// TODO  createRender-01
+// TODO  createRenderer-01
 /* // 方法1 
   export function createApp(rootComponent) {
     return {

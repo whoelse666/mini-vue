@@ -3,10 +3,11 @@ import { emit } from "./componentEmits";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
+import { proxyRefs } from "..";
 
 // 导出一个函数，用于创建组件实例
 export function createComponentInstance(vnode, parent) {
-  console.log("parent", parent,parent?.provides);
+  console.log("parent", parent, parent?.provides);
 
   // 创建一个组件对象
   const component = {
@@ -61,7 +62,8 @@ function handleSetupResult(instance: any, setupResult) {
   //  setup 调用的两种方式,
   // 1. Object
   if (typeof setupResult === "object") {
-    instance.setupState = setupResult;
+    // instance.setupState = setupResult
+    instance.setupState = proxyRefs(setupResult);
   } else if (typeof setupResult === "function") {
     // TODO 2. Object
     console.log('setupResult === "object")');
