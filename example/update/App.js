@@ -2,14 +2,12 @@ import { h, ref } from "../../lib/guide-mini-vue.esm.js";
 
 export const App = {
   name: "App",
-
   setup() {
     const count = ref(0);
-
     const onClick = () => {
       count.value++;
+      console.log('count.value',count.value);
     };
-
     return {
       count,
       onClick

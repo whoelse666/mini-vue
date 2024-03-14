@@ -1,3 +1,4 @@
+import { effect } from "../reactivity/effect";
 import { ShapeFlags } from "../shared/shapeFlag";
 import { createComponentInstance, setupComponent } from "./component";
 import { createAppAPI } from "./createApp";
@@ -99,14 +100,10 @@ export function createRenderer(options) {
     });
   }
 
-  // 函数setupRenderEffect,用于设置渲染效果
-  function setupRenderEffect(instance: any, initialVNode, container: any) {
-    // const subTree = instance.render(); // h()函数返回
-    const subTree = instance.render.call(instance.proxy); // h()函数返回
-    /* 组件类型( ShapeFlags.STATEFUL_COMPONENT ) 到这里时候 ，instance 初始化完成  (每一个组件的 初始 root )
- instance = {
-   emit: ƒ ()
-   render:ƒ render()
+  /* 组件类型( ShapeFlags.STATEFUL_COMPONENT ) 到这里时候 ，instance 初始化完成  (每一个组件的 初始 root )
+  instance = {
+    emit: ƒ ()
+    render:ƒ render()
     parent
     props
     provides
@@ -116,9 +113,27 @@ export function createRenderer(options) {
     type
     vnode
   } */
-    patch(subTree, container, instance);
-    // 2. $el-> 挂在el
-    initialVNode.el = subTree.el;
+  // 函数setupRenderEffect,用于设置渲染效果
+  function setupRenderEffect(instance: any, initialVNode, container: any) {
+    effect(() => {
+      if (!instance.isMounted) {
+        console.log("isMounted");
+        // const subTree = instance.render(); // h()函数返回
+        const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
+        patch(subTree, container, instance);
+        // 2. $el-> 挂在el
+        initialVNode.el = subTree.el;
+        instance.isMounted = true;
+      } else {
+        console.log("update");
+        const prevSubTree = instance.subTree;
+        const subTree = instance.render.call(instance.proxy);
+        instance.subTree = subTree;
+        console.log("subTree", subTree);
+        console.log("prevSubTree", prevSubTree);
+        patch(subTree, container, instance);
+      }
+    });
   }
 
   function processFragment(vnode: any, container: any, parentComponent) {

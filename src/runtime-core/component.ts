@@ -7,8 +7,6 @@ import { proxyRefs } from "..";
 
 // 导出一个函数，用于创建组件实例
 export function createComponentInstance(vnode, parent) {
-  console.log("parent", parent, parent?.provides);
-
   // 创建一个组件对象
   const component = {
     // 将vnode赋值给组件对象
@@ -20,6 +18,8 @@ export function createComponentInstance(vnode, parent) {
     provides: parent ? parent.provides : {},
     parent,
     slots: {},
+    isMounted: false,
+    subTree: null,
     emit
   };
   component.emit = emit.bind(null, component) as any;
