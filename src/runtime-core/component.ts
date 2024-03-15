@@ -1,9 +1,9 @@
+import { proxyRefs } from "..";
 import { shallowReadonly } from "../reactivity/reactive";
 import { emit } from "./componentEmits";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 import { initSlots } from "./componentSlots";
-import { proxyRefs } from "..";
 
 // 导出一个函数，用于创建组件实例
 export function createComponentInstance(vnode, parent) {
@@ -19,7 +19,7 @@ export function createComponentInstance(vnode, parent) {
     parent,
     slots: {},
     isMounted: false,
-    subTree: null,
+    subTree: {},
     emit
   };
   component.emit = emit.bind(null, component) as any;

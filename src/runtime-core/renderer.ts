@@ -5,33 +5,31 @@ import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
 export function createRenderer(options) {
-  const { createElement, insert, patchProp } = options;
+  const { createElement, insert, patchProp: hostPatchProp } = options;
 
   function render(vnode, container) {
-    patch(vnode, container, null);
+    patch(null, vnode, container, null);
   }
 
   // 函数patch,用于处理vnode和container
-  function patch(vnode: any, container: any, parentComponent) {
+  function patch(n1, n2: any, container: any, parentComponent) {
     /* TODO :区分 component 和 element */
     // fixme 如果vnode的类型是字符串, ===vnode 就是element 类型参数
-    const { shapeFlag, type } = vnode;
-    // console.log("type", type);
-    // console.log('vnode.shapeFlag',vnode.shapeFlag);
+    const { shapeFlag, type } = n2;
     switch (type) {
       case Fragment:
-        processFragment(vnode, container, parentComponent);
+        processFragment(n1, n2, container, parentComponent);
         break;
       case Text:
-        processTextVNode(vnode, container);
+        processTextVNode(n1, n2, container);
         break;
       default:
         // if (typeof vnode.type === "string") {
         if (shapeFlag & ShapeFlags.ELEMENT) {
-          processElement(vnode, container, parentComponent);
+          processElement(n1, n2, container, parentComponent);
           //fixme 如果vnode的类型是对象 , === vnode 就是 Component 类型的参数
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-          processComponent(vnode, container, parentComponent);
+          processComponent(n2, container, parentComponent);
         }
     }
   }
@@ -43,9 +41,43 @@ export function createRenderer(options) {
   }
 
   // 函数processElement,用于处理元素
-  function processElement(vnode: any, container: any, parentComponent) {
-    // 调用mountElement函数处理vnode和container
-    mountElement(vnode, container, parentComponent);
+  function processElement(n1, n2: any, container: any, parentComponent) {
+    if (!n1) {
+      // 调用mountElement函数处理vnode和container
+      mountElement(n1, n2, container, parentComponent);
+    } else {
+      // 调用patchElement函数处理vnode和container
+      patchElement(n1, n2, container, parentComponent);
+    }
+  }
+
+  // 函数patchElement，用于更新DOM节点
+  function patchElement(n1: any, n2: any, container: any, parentComponent: any) {
+    console.log("patchElement");
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
+    n2.el = n1.el;
+    patchProps(oldProps, newProps, n1.el);
+  }
+
+  function patchProps(oldProps, newProps, el) {
+    // 更新props
+    for (const key in newProps) {
+      const prevProp = oldProps[key];
+      const nextProp = newProps[key];
+      if (prevProp !== nextProp) {
+        hostPatchProp(el, key, prevProp, nextProp);
+      }
+    }
+    for (const key in oldProps) {
+      const prevProp = oldProps[key];
+      const nextProp = newProps[key];
+      if (!nextProp) {
+        hostPatchProp(el, key, prevProp, nextProp);
+      }
+    }
+
+
   }
 
   // 函数mountComponent,用于处理组件
@@ -59,13 +91,13 @@ export function createRenderer(options) {
   }
 
   //  处理vnode ->  element
-  function mountElement(vnode: any, container: any, parentComponent) {
+  function mountElement(n1, n2: any, container: any, parentComponent) {
     // const el = document.createElement(vnode.type);
-    const el = createElement(vnode.type);
+    const el = createElement(n2.type);
 
     // 1. $el-> 挂在el
-    vnode.el = el;
-    const { children, props, shapeFlag } = vnode;
+    n2.el = el;
+    const { children, props, shapeFlag } = n2;
     // children
     // shapeFlag & ShapeFlags.STATEFUL_COMPONENT
     // if (typeof children === "string") {
@@ -79,7 +111,7 @@ export function createRenderer(options) {
     // props
     for (const key in props) {
       const val = props[key];
-      patchProp(el, key, val);
+      hostPatchProp(el, key, null,val);
       /* 
     const isOn = () => /^on[A-Z]/.test(key);
     // if (key.startsWith("on")) {
@@ -96,7 +128,7 @@ export function createRenderer(options) {
   function mountChildren(vnode, container, parentComponent) {
     vnode.forEach(v => {
       // 调用patch函数处理v和container
-      patch(v, container, parentComponent);
+      patch(null, v, container, parentComponent);
     });
   }
 
@@ -120,7 +152,7 @@ export function createRenderer(options) {
         console.log("isMounted");
         // const subTree = instance.render(); // h()函数返回
         const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
-        patch(subTree, container, instance);
+        patch(null, subTree, container, instance);
         // 2. $el-> 挂在el
         initialVNode.el = subTree.el;
         instance.isMounted = true;
@@ -129,20 +161,18 @@ export function createRenderer(options) {
         const prevSubTree = instance.subTree;
         const subTree = instance.render.call(instance.proxy);
         instance.subTree = subTree;
-        console.log("subTree", subTree);
-        console.log("prevSubTree", prevSubTree);
-        patch(subTree, container, instance);
+        patch(prevSubTree, subTree, container, instance);
       }
     });
   }
 
-  function processFragment(vnode: any, container: any, parentComponent) {
-    mountChildren(vnode.children, container, parentComponent);
+  function processFragment(n1, n2: any, container: any, parentComponent) {
+    mountChildren(n2.children, container, parentComponent);
   }
 
-  function processTextVNode(vnode: any, container: any) {
-    const el = document.createTextNode(vnode.children);
-    vnode.el = el;
+  function processTextVNode(n1, n2: any, container: any) {
+    const el = document.createTextNode(n2.children);
+    n2.el = el;
     container.append(el);
   }
 

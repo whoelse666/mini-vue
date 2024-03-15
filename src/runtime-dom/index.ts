@@ -2,7 +2,6 @@
 函数执行不同平台的api， 
 */
 import { createRenderer } from "../runtime-core";
-import { createVNode } from "../runtime-core/vnode";
 export * from "../runtime-core";
 
 // 创建一个函数，用于创建元素
@@ -11,16 +10,20 @@ export function createElement(type) {
   return document.createElement(type);
 }
 // 为元素el设置属性，key为属性名，val为属性值
-export function patchProp(el, key, val) {
+export function patchProp(el, key, prevProp, nextProp) {
   // 判断属性名是否以on开头
   const isOn = () => /^on[A-Z]/.test(key);
   // if (key.startsWith("on")) {
   // 如果是on开头，则将属性名转换为小写，并添加事件监听
   if (isOn()) {
-    el.addEventListener(key.slice(2).toLowerCase(), val);
+    el.addEventListener(key.slice(2).toLowerCase(), nextProp);
   } else {
-    // 否则直接设置属性
-    el.setAttribute(key, val);
+    if (nextProp === undefined || nextProp === null) {
+      el.removeAttribute(key);
+    } else {
+      // 否则直接设置属性
+      el.setAttribute(key, nextProp);
+    }
   }
 }
 
