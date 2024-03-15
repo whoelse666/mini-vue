@@ -28,4 +28,5 @@ mini-vue源码以及单元测试;
 26. 实现provide-inject 功能
 27. 实现自定义渲染器 custom renderer
 28. 更新element流程搭建
-29. feat:更新element 的 props
+29. 更新element 的 props
+30. feat:更新 element 的 children
