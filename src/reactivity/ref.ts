@@ -68,7 +68,7 @@ export function unRef(val) {
 // 导出一个函数，用于代理引用
 export function proxyRefs(objectWithRefs) {
   // 打印出objectWithRefs
-  console.log("proxyRefs", objectWithRefs);
+  // console.log("proxyRefs", objectWithRefs);
   // 返回一个代理对象
   return new Proxy(objectWithRefs, {
     get(target, key) {
