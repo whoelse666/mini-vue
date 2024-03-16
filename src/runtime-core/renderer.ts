@@ -5,7 +5,7 @@ import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
 export function createRenderer(options) {
-  const { createElement, insert, patchProp: hostPatchProp } = options;
+  const { createElement, insert, patchProp: hostPatchProp, setElementText: hostSetElementText, remove: hostRemove } = options;
 
   function render(vnode, container) {
     patch(null, vnode, container, null);
@@ -52,12 +52,54 @@ export function createRenderer(options) {
   }
 
   // 函数patchElement，用于更新DOM节点
+  // 函数patchElement，用于更新组件的props
   function patchElement(n1: any, n2: any, container: any, parentComponent: any) {
     console.log("patchElement");
+    // 获取旧props
     const oldProps = n1.props || {};
+    // 获取新props
     const newProps = n2.props || {};
-    n2.el = n1.el;
+    // 更新组件的el
+    const el = (n2.el = n1.el);
+
+    patchChildren(n1, n2, el, parentComponent);
+    // 更新props
     patchProps(oldProps, newProps, n1.el);
+  }
+
+  function patchChildren(n1, n2, container, parentComponent) {
+    console.log("patchChildren");
+    const prevShapeFlag = n1.shapeFlag;
+    const { shapeFlag } = n2;
+    const c1 = n1.children;
+    const c2 = n2.children;
+    //新的children是文本
+    if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      // 老的children是数组
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // 移除旧子节点
+        unmountChildren(n1.children);
+        // 设置新的元素文本
+        hostSetElementText(container, n2.children);
+      }
+      if (c1 !== c2) {
+        //旧的 children  是文本, 直接用新的文本覆盖旧的
+        hostSetElementText(container, n2.children);
+      }
+    }
+    // 新的children是数组
+    if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+      // 老的children是文本
+      if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        // 移除旧的文本节点
+        hostSetElementText(container, "");
+        // 挂载新的的子节点
+        mountChildren(n2.children, container, parentComponent);
+      } else {
+        // 新的children是数组，老的children是数组，需要更新
+        console.log("新的children是数组，老的children是数组，需要更新");
+      }
+    }
   }
 
   function patchProps(oldProps, newProps, el) {
@@ -66,6 +108,7 @@ export function createRenderer(options) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
       if (prevProp !== nextProp) {
+        // 比较新旧props，如果不同，则更新
         hostPatchProp(el, key, prevProp, nextProp);
       }
     }
@@ -73,11 +116,10 @@ export function createRenderer(options) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
       if (!nextProp) {
+        // 如果新props中没有该prop，则删除
         hostPatchProp(el, key, prevProp, nextProp);
       }
     }
-
-
   }
 
   // 函数mountComponent,用于处理组件
@@ -111,7 +153,7 @@ export function createRenderer(options) {
     // props
     for (const key in props) {
       const val = props[key];
-      hostPatchProp(el, key, null,val);
+      hostPatchProp(el, key, null, val);
       /* 
     const isOn = () => /^on[A-Z]/.test(key);
     // if (key.startsWith("on")) {
@@ -125,13 +167,21 @@ export function createRenderer(options) {
     insert(el, container);
   }
 
-  function mountChildren(vnode, container, parentComponent) {
-    vnode.forEach(v => {
+  // 遍历children，调用patch函数处理每一个v，并将其添加到container中
+  function mountChildren(children, container, parentComponent) {
+    children.forEach(v => {
       // 调用patch函数处理v和container
       patch(null, v, container, parentComponent);
     });
   }
 
+  // 遍历children，调用hostRemove函数移除每一个el
+  function unmountChildren(children) {
+    for (let i = 0; i < children.length; i++) {
+      const el = children[i].el;
+      hostRemove(el);
+    }
+  }
   /* 组件类型( ShapeFlags.STATEFUL_COMPONENT ) 到这里时候 ，instance 初始化完成  (每一个组件的 初始 root )
   instance = {
     emit: ƒ ()
@@ -149,7 +199,6 @@ export function createRenderer(options) {
   function setupRenderEffect(instance: any, initialVNode, container: any) {
     effect(() => {
       if (!instance.isMounted) {
-        console.log("isMounted");
         // const subTree = instance.render(); // h()函数返回
         const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
         patch(null, subTree, container, instance);
@@ -157,7 +206,6 @@ export function createRenderer(options) {
         initialVNode.el = subTree.el;
         instance.isMounted = true;
       } else {
-        console.log("update");
         const prevSubTree = instance.subTree;
         const subTree = instance.render.call(instance.proxy);
         instance.subTree = subTree;

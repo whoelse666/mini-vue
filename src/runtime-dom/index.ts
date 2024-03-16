@@ -31,10 +31,23 @@ export function patchProp(el, key, prevProp, nextProp) {
 export function insert(el, parent) {
   parent.append(el);
 }
+
+function remove(child) {
+  const parent = child.parentNode;
+  if (parent) parent.removeChild(child);
+}
+
+function setElementText(el, text) {
+  console.log("setElementText");
+  el.textContent = text;
+}
+
 const renderObj: any = createRenderer({
   createElement,
   patchProp,
-  insert
+  insert,
+  setElementText,
+  remove
 });
 
 // TODO  createRenderer-01
