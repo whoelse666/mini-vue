@@ -163,11 +163,6 @@ export function createRenderer(options) {
         i++;
       }
     }
-    // while (i > e1 && i <= e2) {
-    //   console.log("长度不同:", i, e1, e2);
-    //   patch(null, c2[i], container, parentComponent, anchor);
-    //   i++;
-    // }
   }
 
   function patchProps(oldProps, newProps, el) {
