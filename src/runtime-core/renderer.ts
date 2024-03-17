@@ -52,7 +52,6 @@ export function createRenderer(options) {
   }
 
   // 函数patchElement,用于更新DOM节点
-  // 函数patchElement,用于更新组件的props
   function patchElement(n1: any, n2: any, container: any, parentComponent: any, anchor) {
     console.log("patchElement");
     // 获取旧props
@@ -63,10 +62,11 @@ export function createRenderer(options) {
     const el = (n2.el = n1.el);
 
     patchChildren(n1, n2, el, parentComponent, anchor);
-    // 更新props
+    // 更新prop
     patchProps(oldProps, newProps, n1.el);
   }
 
+  // 比较新旧节点，完成 渲染更新
   function patchChildren(n1, n2, container, parentComponent, anchor) {
     console.log("patchChildren");
     const prevShapeFlag = n1.shapeFlag;
@@ -102,9 +102,9 @@ export function createRenderer(options) {
     }
   }
 
-  function patchKeyedChildren(c1: any, c2: any, container: any, parentComponent: any, anchor) {
+  function patchKeyedChildren(c1: any, c2: any, container: any, parentComponent: any, parentAnchor) {
+    const l2 = c2.length;
     let i = 0,
-      l2 = c2.length,
       e1 = c1.length - 1,
       e2 = l2 - 1;
     // 判断两个虚拟节点是否相同
@@ -119,7 +119,7 @@ export function createRenderer(options) {
       const n1 = c1[i];
       const n2 = c2[i];
       if (isSameVNodeType(n1, n2)) {
-        patch(n1, n2, container, parentComponent, anchor);
+        patch(n1, n2, container, parentComponent, parentAnchor);
       } else {
         // 直到有一个不相同了,就结束左到右这个循环
         break;
@@ -135,7 +135,7 @@ export function createRenderer(options) {
       const n1 = c1[e1];
       const n2 = c2[e2];
       if (isSameVNodeType(n1, n2)) {
-        patch(n1, n2, container, parentComponent, anchor);
+        patch(n1, n2, container, parentComponent, parentAnchor);
       } else {
         // 直到有一个不相同了,就结束右到左这个循环
         break;
@@ -147,26 +147,70 @@ export function createRenderer(options) {
     console.log("右侧结束:i,e1,e2", i, e1, e2);
 
     // TODO  新的比老的多创建
-    if (i > e1 && i <= e2) {
-      console.log("新的比老的多创建");
-      const nextPos = e2 + 1;
-      const anchor = nextPos < l2 ? c2[nextPos].el : null;
-      while (i <= e2) {
-        patch(null, c2[i], container, parentComponent, anchor);
-        i++;
+    if (i > e1) {
+      if (i <= e2) {
+        console.log("新的比老的多创建");
+        const nextPos = e2 + 1;
+        const anchor = nextPos < l2 ? c2[nextPos].el : null;
+        while (i <= e2) {
+          patch(null, c2[i], container, parentComponent, anchor);
+          i++;
+        }
       }
     } else if (i > e2) {
-      // 老的比新的多创建
-      console.log("老的比新的多创建");
+      // 老的比新的多删除
+      console.log("老的比新的多删除");
       while (i <= e1) {
         hostRemove(c1[i].el);
         i++;
+      }
+    } else {
+      console.log("中间对比");
+      const s1 = i, s2 = i;
+      const toBePatched = e2 - s2 + 1;
+      let patched = 0;
+      // 1. 基于新的 创建 key 映射表，然后循环老的，每一个key 去keyToNewIndexMap 中找，没有的话，就可能为删除（用户传入可能会没有填写key）
+      const keyToNewIndexMap = new Map();
+      for (let k = s2; k <= e2; k++) {
+        // 创建 新的tree 的 map 映射
+        const nextChild = c2[k];
+        keyToNewIndexMap.set(nextChild.key, k);
+      }
+
+      for (let k = s1; k <= e1; k++) {
+        const prevChild = c1[k];
+        // 优化: 新的已经全部比对完，旧的还有，不用继续循环,就删除
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el);
+          continue;
+        }
+        let nextIndex;
+        if (prevChild.key != null) {
+          // 有key 的比对
+          nextIndex = keyToNewIndexMap.get(prevChild.key);
+        } else {
+          // 没有key 的比对
+          for (let j = s2; j < e2; j++) {
+            // 循环新的， 一一去和旧prevChild的比对，节点是否新老都存在
+            if (isSameVNodeType(prevChild, c2[j])) {
+              nextIndex = j;
+              // 找到后就立马结束 ， 避免不必要的循环
+              break;
+            }
+          }
+        }
+        // 以上处理都结束后 nextIndex 还是没有的话 ，就要删除
+        if (nextIndex === undefined) {
+          hostRemove(prevChild.el);
+        } else {
+          patch(prevChild, c2[nextIndex], container, parentComponent, null);
+        }
       }
     }
   }
 
   function patchProps(oldProps, newProps, el) {
-    // 更新props
+    // 更新props 循环新的，比较新旧是否相同
     for (const key in newProps) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
@@ -175,6 +219,7 @@ export function createRenderer(options) {
         hostPatchProp(el, key, prevProp, nextProp);
       }
     }
+    // 循环旧的 判断旧的有，新的没有的属性，删除
     for (const key in oldProps) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
