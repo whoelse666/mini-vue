@@ -174,12 +174,15 @@ export function createRenderer(options) {
       const newIndexToOldIndexMap = new Array(toBePatched).fill(0);
       let moved = false, maxNewIndexSoFar = 0;
 
+      // 遍历 c2 数组，将 s2 和 e2 之间的元素添加到 keyToNewIndexMap 中
       for (let i = s2; i <= e2; i++) {
         // 创建 新的tree 的 map 映射
+        // 获取 c2 数组中 i 位置的元素
         const nextChild = c2[i];
+        // 将 nextChild 的 key 和 i 添加到 keyToNewIndexMap 中
         keyToNewIndexMap.set(nextChild.key, i);
       }
-
+      // 这里的 s1  此时是 去除首尾部分相同节点后索引位置 
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i];
         // 优化: 新的已经全部比对完，旧的还有，不用继续循环,就删除
@@ -213,28 +216,40 @@ export function createRenderer(options) {
             moved = true;
           }
           // nextIndex - s2 相对于去除首位相同部分，截取中间部分数组 ，在取的索引
-          const num = newIndexToOldIndexMap[newIndex - s2] = i + 1;
-          console.log(newIndexToOldIndexMap, `newIndexToOldIndexMap[${newIndex - s2}]`, num);
+          // newIndex 是新老都有的节点，在新的节点数组里的完整的索引
+          // i 是 老的节点数组的完整索引
+          //这里的赋值 是新旧节点位置索引的隐射关系， i 是获取相对位置关系，i + 1 防止i==0 情况，整体都+ 1 不会影响相对的位置关系；
+          /* fixme :  i 可能是0 ，但是newIndexToOldIndexMap初始化给的值就是 0 ，再给  newIndexToOldIndexMap[x] = 0 在这里就没有意义，所以默认 统一 i+1 防止i == 0 情况 */
+          newIndexToOldIndexMap[newIndex - s2] = i + 1;
           patch(prevChild, c2[newIndex], container, parentComponent, null);
           patched++;
         }
       }
+      // 获取新索引序列，如果移动了则从新索引到旧索引映射中获取，否则为空
       const increasingNewIndexSequence = moved
         ? getSequence(newIndexToOldIndexMap)
         : [];
+      // 反序列循环，是因为需要依赖于后一个节点，insertBefore 插入节点
       let j = increasingNewIndexSequence.length - 1;
-
+      // 遍历中间部分，需要更新的节点 toBePatched = e2-s2+1
       for (let i = toBePatched - 1; i >= 0; i--) {
+        // 获取下一个节点的索引
         const nextIndex = s2 + i;
+        // 获取下一个节点
         const nextChild = c2[nextIndex];
+        // 获取下一个节点的锚点
         const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null;
+        // 如果新旧索引映射表中该位置的值为0，老节点中没有这个节点，新节点中有，则创建新节点
         if (newIndexToOldIndexMap[i] === 0) {
           patch(null, nextChild, container, parentComponent, anchor);
         } else if (moved) {
+          // 如果j小于0或者i不等于增加的新索引序列中的j，则插入新节点
+          //  j < 0 则 最长递增自序列 已经执行完，剩下的就都是要移动的
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
             console.log('移动位置', i, increasingNewIndexSequence[j], nextChild, anchor);
             hostInsert(nextChild.el, container, anchor);
           } else {
+            //  新老都有，并且位置相对位置不变(最长递增自序列)
             j--
           }
         }
