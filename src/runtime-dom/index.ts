@@ -27,7 +27,7 @@ export function patchProp(el, key, prevProp, nextProp) {
   }
 }
 
-// 向父元素插入新元素
+// 向父元素插入新元素  , 移动位置
 export function insert(child, parent, anchor) {
   // parent.append(el);
   parent.insertBefore(child, anchor || null);
