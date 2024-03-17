@@ -49,4 +49,6 @@ mini-vue 源码以及单元测试;
 29. 更新 element 的 props
 30. 更新 element 的 children
 31. 更新 element 的 children - 双端对比 diff 算法(1)
-32. feat:更新 element 的 children - 双端对比 diff 算法(2)
+32. 更新 element 的 children - 双端对比 diff 算法(2)
+33. 更新 element 的 children - 双端对比 diff 算法(3)
+33. feat:学习vue 的 解决 bug 的处理方式
