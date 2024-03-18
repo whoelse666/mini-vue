@@ -61,14 +61,14 @@ export function createRenderer(options) {
     // 更新组件的el
     const el = (n2.el = n1.el);
 
+    // 比较n1和n2，并调用patchChildren函数
     patchChildren(n1, n2, el, parentComponent, anchor);
-    // 更新prop
+    // 更新组件的props
     patchProps(el, oldProps, newProps);
   }
 
   // 比较新旧节点，完成 渲染更新
   function patchChildren(n1, n2, container, parentComponent, anchor) {
-    // console.log("patchChildren");
     const prevShapeFlag = n1.shapeFlag;
     const { shapeFlag } = n2;
     const c1 = n1.children;
@@ -79,10 +79,10 @@ export function createRenderer(options) {
       if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
         // 移除旧子节点
         unmountChildren(n1.children);
-        // 设置新的元素文本
-        hostSetElementText(container, n2.children);
       }
       if (c1 !== c2) {
+        // 设置新的元素文本
+        // hostSetElementText(container, n2.children);
         //旧的 children  是文本, 直接用新的文本覆盖旧的
         hostSetElementText(container, n2.children);
       }
@@ -105,6 +105,7 @@ export function createRenderer(options) {
   function patchKeyedChildren(c1: any, c2: any, container: any, parentComponent: any, parentAnchor) {
     const l2 = c2.length;
     let i = 0,
+      //  新老节点索引
       e1 = c1.length - 1,
       e2 = l2 - 1;
     // 判断两个虚拟节点是否相同
@@ -112,6 +113,9 @@ export function createRenderer(options) {
       // 判断两个虚拟节点的类型和key是否相同
       return n1.type === n2.type && n1.key === n2.key;
     }
+
+
+
     //左侧
     while (i <= e1 && i <= e2) {
       // console.log("左侧");
@@ -122,13 +126,13 @@ export function createRenderer(options) {
         patch(n1, n2, container, parentComponent, parentAnchor);
       } else {
         // 直到有一个不相同了,就结束左到右这个循环
+        console.log("左侧直到不同位置- 结束:i,e1,e2", i, e1, e2);
         break;
       }
-      // 左侧还是 从0 开始往右移动
+      // 左侧开始 从0 开始往右移动
       i++;
     }
-    // console.log("左侧结束:i,e1,e2", i, e1, e2);
-
+    console.log("左侧结束:i,e1,e2", i, e1, e2);
     // 右侧
     while (i <= e1 && i <= e2) {
       // console.log("右侧");
@@ -138,19 +142,23 @@ export function createRenderer(options) {
         patch(n1, n2, container, parentComponent, parentAnchor);
       } else {
         // 直到有一个不相同了,就结束右到左这个循环
+        console.log("右侧直到不同位置- 结束:i,e1,e2", i, e1, e2);
         break;
       }
-      // 右侧还是 从length  开始往左移动
+      // 右侧开始 从length  开始往左移动
       e1--;
       e2--;
     }
-    // console.log("右侧结束:i,e1,e2", i, e1, e2);
+    console.log("右侧结束:i,e1,e2", i, e1, e2);
 
-    // TODO  新的比老的多创建
+
+    // TODO  新的比老的多创建, 只有新增，无位移
     if (i > e1) {
       if (i <= e2) {
+        // 判断条件执行到这里，老的节点已经全部跑完，剩下的是只有新的才有的节点，所以都要新创建
         // console.log("新的比老的多创建");
-        const nextPos = e2 + 1;
+        const nextPos = i;
+        // const nextPos = e2 + 1;
         const anchor = nextPos < l2 ? c2[nextPos].el : null;
         while (i <= e2) {
           patch(null, c2[i], container, parentComponent, anchor);
@@ -158,7 +166,7 @@ export function createRenderer(options) {
         }
       }
     } else if (i > e2) {
-      // 老的比新的多删除
+      // 老的比新的多删除 , 无位移
       // console.log("老的比新的多删除");
       while (i <= e1) {
         hostRemove(c1[i].el);
@@ -196,7 +204,7 @@ export function createRenderer(options) {
           newIndex = keyToNewIndexMap.get(prevChild.key);
         } else {
           // 没有key 的比对
-          for (let j = s2; j < e2; j++) {
+          for (let j = s2; j <= e2; j++) {
             // 循环新的， 一一去和旧prevChild的比对，节点是否新老都存在
             if (isSameVNodeType(prevChild, c2[j])) {
               // nextINdex 的值是新的节点循环 的 索引,相对于完整列表的索引 
