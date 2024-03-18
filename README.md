@@ -51,4 +51,5 @@ mini-vue 源码以及单元测试;
 31. 更新 element 的 children - 双端对比 diff 算法(1)
 32. 更新 element 的 children - 双端对比 diff 算法(2)
 33. 更新 element 的 children - 双端对比 diff 算法(3)
-34. feat:学习vue 的 解决 bug 的处理方式
+34. 学习vue 的 解决 bug 的处理方式
+35. feat:实现组件更新功能
