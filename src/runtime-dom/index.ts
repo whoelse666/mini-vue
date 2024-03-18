@@ -39,7 +39,6 @@ function remove(child) {
 }
 
 function setElementText(el, text) {
-  console.log("setElementText");
   el.textContent = text;
 }
 
