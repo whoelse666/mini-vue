@@ -1,6 +1,7 @@
 import { effect } from "../reactivity/effect";
 import { ShapeFlags } from "../shared/shapeFlag";
 import { createComponentInstance, setupComponent } from "./component";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
@@ -29,15 +30,33 @@ export function createRenderer(options) {
           processElement(n1, n2, container, parentComponent, anchor);
           //fixme 如果vnode的类型是对象 , === vnode 就是 Component 类型的参数
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-          processComponent(n2, container, parentComponent, anchor);
+          processComponent(n1, n2, container, parentComponent, anchor);
         }
     }
   }
 
   // 函数processComponent,用于处理组件
-  function processComponent(vnode: any, container: any, parentComponent, anchor) {
-    // 调用mountComponent函数处理vnode和container
-    mountComponent(vnode, container, parentComponent, anchor);
+  function processComponent(n1, n2: any, container: any, parentComponent, anchor) {
+    if (!n1) {
+
+      // 调用mountComponent函数处理vnode和container
+      mountComponent(n2, container, parentComponent, anchor);
+    } else {
+      // 更新组件
+      updateComponent(n1, n2);
+    }
+  }
+
+
+  function updateComponent(n1, n2) {
+    const instance = (n2.component = n1.component);
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2;
+      instance.update();
+    } else {
+      n2.el = n1.el;
+      instance.vnode = n2;
+    }
   }
 
   // 函数processElement,用于处理元素
@@ -289,13 +308,13 @@ export function createRenderer(options) {
   }
 
   // 函数mountComponent,用于处理组件
-  function mountComponent(vnode: any, container: any, parentComponent, anchor) {
+  function mountComponent(initialVNode: any, container: any, parentComponent, anchor) {
     //  创建组件实例
-    const instance = createComponentInstance(vnode, parentComponent);
+    const instance = initialVNode.component = createComponentInstance(initialVNode, parentComponent);
     // 完成对instance 的 初始化处理
     setupComponent(instance);
     //这里已经完成了vnode 的处理,--> 渲染实例
-    setupRenderEffect(instance, vnode, container, anchor);
+    setupRenderEffect(instance, initialVNode, container, anchor);
   }
 
   //  处理vnode ->  element
@@ -363,7 +382,7 @@ export function createRenderer(options) {
   } */
   // 函数setupRenderEffect,用于设置渲染效果
   function setupRenderEffect(instance: any, initialVNode, container: any, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       if (!instance.isMounted) {
         // const subTree = instance.render(); // h()函数返回
         const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
@@ -372,6 +391,14 @@ export function createRenderer(options) {
         initialVNode.el = subTree.el;
         instance.isMounted = true;
       } else {
+        console.log('update',);
+        // 需要一个 vnode
+        const { next, vnode } = instance;
+        if (next) {
+          next.el = vnode.el;
+          updateComponentPreRender(instance, next);
+
+        }
         const prevSubTree = instance.subTree;
         const subTree = instance.render.call(instance.proxy);
         instance.subTree = subTree;
@@ -380,7 +407,17 @@ export function createRenderer(options) {
     });
   }
 
+  function updateComponentPreRender(instance, nextVNode) {
+    console.log('instance, next', instance, nextVNode);
+    instance.vnode = nextVNode;
+    instance.next = null;
+    instance.props = nextVNode.props;
+
+  }
+
+  //函数processFragment，用于处理片段，参数n1，n2，container，parentComponent，anchor
   function processFragment(n1, n2: any, container: any, parentComponent, anchor) {
+    //调用mountChildren函数，传入n2的children，container，parentComponent，anchor
     mountChildren(n2.children, container, parentComponent, anchor);
   }
 
