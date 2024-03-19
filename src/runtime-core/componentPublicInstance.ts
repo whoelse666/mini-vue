@@ -1,9 +1,9 @@
 import { hasOwn, isObject } from "../shared/index";
 
 const publicPropsMap = {
-  $el: ({ vnode }) => vnode && vnode.el,
-  $slots: (v) => v.slots
-  // $props:(ins) => ins.vnode.props,
+  $el: (i) => i.vnode.el,
+  $slots: (i) => i.slots,
+  $props: (i) => i.props,
 };
 
 // 导出一个常量PublicInstanceProxyHandlers，它是一个对象
