@@ -1,6 +1,7 @@
 import { effect } from "../reactivity/effect";
 import { ShapeFlags } from "../shared/shapeFlag";
 import { createComponentInstance, setupComponent } from "./component";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
@@ -29,16 +30,40 @@ export function createRenderer(options) {
           processElement(n1, n2, container, parentComponent, anchor);
           //fixme 如果vnode的类型是对象 , === vnode 就是 Component 类型的参数
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-          processComponent(n2, container, parentComponent, anchor);
+          processComponent(n1, n2, container, parentComponent, anchor);
         }
     }
   }
 
   // 函数processComponent,用于处理组件
-  function processComponent(vnode: any, container: any, parentComponent, anchor) {
-    // 调用mountComponent函数处理vnode和container
-    mountComponent(vnode, container, parentComponent, anchor);
+  function processComponent(n1, n2: any, container: any, parentComponent, anchor) {
+    if (!n1) {
+      // 调用mountComponent函数处理vnode和container
+      mountComponent(n2, container, parentComponent, anchor);
+    } else {
+      updateComponent(n1, n2);
+    }
   }
+
+ // 函数用于更新组件
+  function updateComponent(n1, n2) {
+    // 将n2的组件赋值给instance
+    const instance = (n2.component = n1.component);
+    // 如果n1和n2需要更新组件
+    if (shouldUpdateComponent(n1, n2)) {
+      // 将n2赋值给instance的next
+      instance.next = n2;
+      // 调用instance的update方法
+      instance.update();
+    } else {
+      // 将n1的el赋值给n2的el
+      n2.el = n1.el;
+      // 将n2赋值给instance的vnode
+      instance.vnode = n2;
+    }
+  }
+
+
 
   // 函数processElement,用于处理元素
   function processElement(n1, n2: any, container: any, parentComponent, anchor) {
@@ -289,13 +314,13 @@ export function createRenderer(options) {
   }
 
   // 函数mountComponent,用于处理组件
-  function mountComponent(vnode: any, container: any, parentComponent, anchor) {
+  function mountComponent(initialVNode: any, container: any, parentComponent, anchor) {
     //  创建组件实例
-    const instance = createComponentInstance(vnode, parentComponent);
+    const instance = initialVNode.component = createComponentInstance(initialVNode, parentComponent);
     // 完成对instance 的 初始化处理
     setupComponent(instance);
     //这里已经完成了vnode 的处理,--> 渲染实例
-    setupRenderEffect(instance, vnode, container, anchor);
+    setupRenderEffect(instance, initialVNode, container, anchor);
   }
 
   //  处理vnode ->  element
@@ -348,7 +373,9 @@ export function createRenderer(options) {
       hostRemove(el);
     }
   }
-  /* 组件类型( ShapeFlags.STATEFUL_COMPONENT ) 到这里时候 ,instance 初始化完成  (每一个组件的 初始 root )
+
+  // #endregion
+  /* #region 组件类型( ShapeFlags.STATEFUL_COMPONENT ) 到这里时候 ,instance 初始化完成  (每一个组件的 初始 root )
   instance = {
     emit: ƒ ()
     render:ƒ render()
@@ -363,7 +390,7 @@ export function createRenderer(options) {
   } */
   // 函数setupRenderEffect,用于设置渲染效果
   function setupRenderEffect(instance: any, initialVNode, container: any, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       if (!instance.isMounted) {
         // const subTree = instance.render(); // h()函数返回
         const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
@@ -372,6 +399,15 @@ export function createRenderer(options) {
         initialVNode.el = subTree.el;
         instance.isMounted = true;
       } else {
+        // 更新 update
+        console.log('update',);
+        // 更新props
+        const { next, vnode } = instance;
+        console.log('next,vnode', next, vnode);
+        if (next) {
+          next.el = vnode.el;
+          updateComponentPreRender(instance, next);
+        }
         const prevSubTree = instance.subTree;
         const subTree = instance.render.call(instance.proxy);
         instance.subTree = subTree;
@@ -380,7 +416,21 @@ export function createRenderer(options) {
     });
   }
 
+
+  // 更新组件预渲染函数
+  function updateComponentPreRender(instance, nextVNode) {
+    // 将实例的vnode属性设置为下一个vnode
+    instance.vnode = nextVNode;
+    // // 将实例的next属性设置为null
+    instance.next = null;
+    // 将实例的props属性设置为下一个vnode的props属性
+    instance.props = nextVNode.props;
+  }
+
+
+  // 函数processFragment接收四个参数：n1, n2, container, parentComponent, anchor
   function processFragment(n1, n2: any, container: any, parentComponent, anchor) {
+    // 调用mountChildren函数，传入n2.children, container, parentComponent, anchor参数
     mountChildren(n2.children, container, parentComponent, anchor);
   }
 

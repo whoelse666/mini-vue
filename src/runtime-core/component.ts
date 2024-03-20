@@ -14,7 +14,7 @@ export function createComponentInstance(vnode, parent) {
     // 获取vnode的type属性赋值给组件对象
     type: vnode.type,
     setupState: {},
-    props: {},
+    next:null,
     provides: parent ? parent.provides : {},
     parent,
     slots: {},
