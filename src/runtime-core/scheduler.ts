@@ -23,6 +23,7 @@ let isFlushPending = false;
 function queueFlush() {
   if (isFlushPending) return;
   isFlushPending = true;
+  //  类似防抖功能原理
   // 进到这里后 就会把这个为任务加到队列中，等待同步任务执行完后 开始执行异步任务
   flushJobs();
 }
