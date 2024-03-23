@@ -32,11 +32,35 @@ function parseChildren(context: any) {
     if (/[a-z]/i.test(s[1])) {
       node = parseElement(context);
     }
+  } else {
+    // 解析文本节点
+    node = parseText(context);
   }
   // 将节点推入nodes数组
   nodes.push(node);
   // 返回nodes数组
   return nodes;
+}
+
+// 解析文本
+function parseText(context: any) {
+  // 从上下文中提取内容
+  const content = parserTextData(context,context.source.length);
+  // 返回文本节点
+  return {
+    type: NodeTypes.TEXT,
+    content
+  };
+}
+
+// 提取文本数据
+function parserTextData(context: any,length) {
+  // 提取源代码的前length个字符
+  const content =  context.source.slice(0, length);
+  // 移动指针
+  advanceBy(context, length);
+  // 返回文本数据
+  return content;
 }
 
 // 函数parseElement,接收两个参数context和arg1,返回值any
@@ -50,7 +74,6 @@ function parseElement(context: any): any {
 function parseTag(context: any, type: TAGTYPE) {
   // const match: any = /^<\/?([a-z]+\w*)/i.exec(context.sources);
   const match: any = /^<\/?([a-z]*)/i.exec(context.source);
-  console.log("match", match);
   const tag = match[1];
   // 移动光标 ,已经处理的就删除了,  match[0].length + 1 的  +1 是要再加 > d的一个位置
   advanceBy(context, match[0].length + 1);
@@ -71,8 +94,9 @@ function parseInterpolation(context) {
   advanceBy(context, openDelimiterLength);
   let rawContentLength = closeIndex - openDelimiterLength;
   // 获取内容部分 , 去除'{{' 部分
-  let rawContent = context.source.slice(0, rawContentLength);
-  advanceBy(context, rawContentLength);
+  // let rawContent = context.source.slice(0, rawContentLength);
+  let rawContent = parserTextData(context, rawContentLength);
+  // advanceBy(context, rawContentLength);
   // 去除空格
   let content = rawContent && rawContent.trim();
   return {
