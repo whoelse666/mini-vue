@@ -122,11 +122,12 @@ export function trackEffects(dep: Set<any>) {
 export function triggerEffects(dep) {
   // 遍历dep中的每一个效果
   for (const effect of dep) {
-    // 如果效果中有调度器，则调用调度器
+    // 如果effect中有调度器，则调用调度器
+    console.log("scheduler:如果effect中有调度器，则调用调度器");
     if (effect.scheduler) {
       effect.scheduler();
     } else {
-      // 否则，直接调用效果
+      // 否则，直接调用 effect.run
       effect.run();
     }
   }
