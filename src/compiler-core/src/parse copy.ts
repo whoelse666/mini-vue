@@ -77,11 +77,7 @@ function parseElement(context: any, ancestors): any {
   ancestors.push(element);
   element.children = parseChildren(context, ancestors);
   ancestors.pop();
-  if (startsWithEndTagOpen(context.source, element.tag)) {
-    parseTag(context, TagType.End);
-  } else {
-    throw new Error(`缺少结束标签:${element.tag}`);
-  }
+  parseTag(context, TagType.End);
   return element;
 }
 
