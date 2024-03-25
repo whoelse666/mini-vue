@@ -14,13 +14,11 @@ export function baseParse(content: string) {
 
 // 解析子节点
 function parseChildren(context: any, ancestors) {
-  console.log("ancestors", ancestors);
   const nodes: any = [];
-  // debugger
   while (!isEnd(context, ancestors)) {
     let node;
     const s = context.source;
-    // 如果代码以{{开始
+    // 如果代码以 {{ 开始
     if (s.startsWith("{{")) {
       // 解析插值表达式
       node = parseInterpolation(context);
@@ -102,10 +100,10 @@ function parseElement(context: any, ancestors): any {
   ancestors.push(element);
   element.children = parseChildren(context, ancestors);
   ancestors.pop();
-  console.log( "------------");
-  console.log('element.tag',element.tag);
-  console.log('context.source', context.source);
-  if (element.tag === context.source.slice(2,element.tag.length)) {
+  console.log("------------");
+  console.log("element.tag", element.tag);
+  console.log("context.source", element.tag, context.source.slice(2, 2 + element.tag.length));
+  if (element.tag === context.source.slice(2, 2 + element.tag.length)) {
     parseTag(context, TagType.End);
   } else {
     throw new Error(`缺少结束标签:${element.tag}`);
@@ -139,7 +137,7 @@ function parseInterpolation(context) {
   // 定义开始标签和结束标签
   const openDelimiter = "{{";
   const closeDelimiter = "}}";
-  // 记录开始标签和结束标签的长度
+  // 记录开始标签标签的长度
   let openDelimiterLength = openDelimiter.length;
   const closeIndex = context.source.indexOf(closeDelimiter, openDelimiterLength);
 
