@@ -8,6 +8,7 @@
   "esm": "./lib/guide-mini-vue.esm.js",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "build": "rollup  --config ./rollup.config.mjs",
     "build:watch": "rollup  --config ./rollup.config.mjs --watch"
   },

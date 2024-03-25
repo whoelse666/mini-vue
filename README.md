@@ -52,4 +52,11 @@ mini-vue 源码以及单元测试;
 32. 更新 element 的 children - 双端对比 diff 算法(2)
 33. 更新 element 的 children - 双端对比 diff 算法(3)
 34. 学习vue 的 解决 bug 的处理方式
-35. feat:实现组件更新功能
+35. 实现组件更新功能
+36. 实现 nextTick 功能
+37. 实现解析插值功能
+38. 实现解析 element 标签
+39. 实现解析 text 功能
+40. 实现解析三种联合类型
+
+

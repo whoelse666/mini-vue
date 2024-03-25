@@ -3,6 +3,7 @@ import { ShapeFlags } from "../shared/shapeFlag";
 import { createComponentInstance, setupComponent } from "./component";
 import { shouldUpdateComponent } from "./componentUpdateUtils";
 import { createAppAPI } from "./createApp";
+import { queueJobs } from "./scheduler";
 import { Fragment, Text } from "./vnode";
 
 export function createRenderer(options) {
@@ -41,24 +42,18 @@ export function createRenderer(options) {
       // 调用mountComponent函数处理vnode和container
       mountComponent(n2, container, parentComponent, anchor);
     } else {
+      // 更新组件
       updateComponent(n1, n2);
     }
   }
 
- // 函数用于更新组件
   function updateComponent(n1, n2) {
-    // 将n2的组件赋值给instance
     const instance = (n2.component = n1.component);
-    // 如果n1和n2需要更新组件
     if (shouldUpdateComponent(n1, n2)) {
-      // 将n2赋值给instance的next
       instance.next = n2;
-      // 调用instance的update方法
       instance.update();
     } else {
-      // 将n1的el赋值给n2的el
       n2.el = n1.el;
-      // 将n2赋值给instance的vnode
       instance.vnode = n2;
     }
   }
@@ -72,20 +67,21 @@ export function createRenderer(options) {
       mountElement(n1, n2, container, parentComponent, anchor);
     } else {
       // 调用patchElement函数处理vnode和container
+
       patchElement(n1, n2, container, parentComponent, anchor);
     }
   }
 
   // 函数patchElement,用于更新DOM节点
   function patchElement(n1: any, n2: any, container: any, parentComponent: any, anchor) {
-    // console.log("patchElement");
+    console.log("patchElement");
     // 获取旧props
     const oldProps = n1.props || {};
     // 获取新props
     const newProps = n2.props || {};
     // 更新组件的el
     const el = (n2.el = n1.el);
-
+    console.log("n1,n2", n1, n2);
     // 比较n1和n2，并调用patchChildren函数
     patchChildren(n1, n2, el, parentComponent, anchor);
     // 更新组件的props
@@ -139,8 +135,6 @@ export function createRenderer(options) {
       return n1.type === n2.type && n1.key === n2.key;
     }
 
-
-
     //左侧
     while (i <= e1 && i <= e2) {
       // console.log("左侧");
@@ -176,7 +170,6 @@ export function createRenderer(options) {
     }
     console.log("右侧结束:i,e1,e2", i, e1, e2);
 
-
     // TODO  新的比老的多创建, 只有新增，无位移
     if (i > e1) {
       if (i <= e2) {
@@ -199,13 +192,15 @@ export function createRenderer(options) {
       }
     } else {
       // console.log("中间对比");
-      const s1 = i, s2 = i;
+      const s1 = i,
+        s2 = i;
       const toBePatched = e2 - s2 + 1;
       let patched = 0;
       // 1. 基于新的 创建 key 映射表，然后循环老的，每一个key 去keyToNewIndexMap 中找，没有的话，就可能为删除（用户传入可能会没有填写key）
       const keyToNewIndexMap = new Map();
       const newIndexToOldIndexMap = new Array(toBePatched).fill(0);
-      let moved = false, maxNewIndexSoFar = 0;
+      let moved = false,
+        maxNewIndexSoFar = 0;
 
       // 遍历 c2 数组，将 s2 和 e2 之间的元素添加到 keyToNewIndexMap 中
       for (let i = s2; i <= e2; i++) {
@@ -215,7 +210,7 @@ export function createRenderer(options) {
         // 将 nextChild 的 key 和 i 添加到 keyToNewIndexMap 中
         keyToNewIndexMap.set(nextChild.key, i);
       }
-      // 这里的 s1  此时是 去除首尾部分相同节点后索引位置 
+      // 这里的 s1  此时是 去除首尾部分相同节点后索引位置
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i];
         // 优化: 新的已经全部比对完，旧的还有，不用继续循环,就删除
@@ -232,7 +227,7 @@ export function createRenderer(options) {
           for (let j = s2; j <= e2; j++) {
             // 循环新的， 一一去和旧prevChild的比对，节点是否新老都存在
             if (isSameVNodeType(prevChild, c2[j])) {
-              // nextINdex 的值是新的节点循环 的 索引,相对于完整列表的索引 
+              // nextINdex 的值是新的节点循环 的 索引,相对于完整列表的索引
               newIndex = j;
               // 找到后就立马结束 ， 避免不必要的循环
               break;
@@ -259,9 +254,7 @@ export function createRenderer(options) {
         }
       }
       // 获取新索引序列，如果移动了则从新索引到旧索引映射中获取，否则为空
-      const increasingNewIndexSequence = moved
-        ? getSequence(newIndexToOldIndexMap)
-        : [];
+      const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : [];
       // 反序列循环，是因为需要依赖于后一个节点，insertBefore 插入节点
       let j = increasingNewIndexSequence.length - 1;
       // 遍历中间部分，需要更新的节点 toBePatched = e2-s2+1
@@ -279,16 +272,14 @@ export function createRenderer(options) {
           // 如果j小于0或者i不等于增加的新索引序列中的j，则插入新节点
           //  j < 0 则 最长递增自序列 已经执行完，剩下的就都是要移动的
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
-            console.log('移动位置', i, increasingNewIndexSequence[j], nextChild, anchor);
+            console.log("移动位置", i, increasingNewIndexSequence[j], nextChild, anchor);
             hostInsert(nextChild.el, container, anchor);
           } else {
             //  新老都有，并且位置相对位置不变(最长递增自序列)
-            j--
+            j--;
           }
         }
-
       }
-
     }
   }
 
@@ -316,7 +307,7 @@ export function createRenderer(options) {
   // 函数mountComponent,用于处理组件
   function mountComponent(initialVNode: any, container: any, parentComponent, anchor) {
     //  创建组件实例
-    const instance = initialVNode.component = createComponentInstance(initialVNode, parentComponent);
+    const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent));
     // 完成对instance 的 初始化处理
     setupComponent(instance);
     //这里已经完成了vnode 的处理,--> 渲染实例
@@ -390,47 +381,47 @@ export function createRenderer(options) {
   } */
   // 函数setupRenderEffect,用于设置渲染效果
   function setupRenderEffect(instance: any, initialVNode, container: any, anchor) {
-    instance.update = effect(() => {
-      if (!instance.isMounted) {
-        // const subTree = instance.render(); // h()函数返回
-        const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
-        patch(null, subTree, container, instance, anchor);
-        // 2. $el-> 挂在el
-        initialVNode.el = subTree.el;
-        instance.isMounted = true;
-      } else {
-        // 更新 update
-        console.log('update',);
-        // 更新props
-        const { next, vnode } = instance;
-        console.log('next,vnode', next, vnode);
-        if (next) {
-          next.el = vnode.el;
-          updateComponentPreRender(instance, next);
+    instance.update = effect(
+      () => {
+        if (!instance.isMounted) {
+          // const subTree = instance.render(); // h()函数返回
+          const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
+          patch(null, subTree, container, instance, anchor);
+          // 2. $el-> 挂在el
+          initialVNode.el = subTree.el;
+          instance.isMounted = true;
+        } else {
+          console.log("update");
+          const { next, vnode } = instance;
+          if (next) {
+            next.el = vnode.el;
+            updateComponentPreRender(instance, next);
+          }
+          const prevSubTree = instance.subTree;
+          const subTree = instance.render.call(instance.proxy);
+          instance.subTree = subTree;
+          patch(prevSubTree, subTree, container, instance, anchor);
         }
-        const prevSubTree = instance.subTree;
-        const subTree = instance.render.call(instance.proxy);
-        instance.subTree = subTree;
-        patch(prevSubTree, subTree, container, instance, anchor);
+      },
+      {
+        //  当effect 执行的时候，如果options中有scheduler，则执行scheduler,不执行fn，fn需要手动执行
+        scheduler() {
+          queueJobs(instance.update);
+        }
       }
-    });
+    );
   }
 
-
-  // 更新组件预渲染函数
   function updateComponentPreRender(instance, nextVNode) {
-    // 将实例的vnode属性设置为下一个vnode
+    console.log("instance, next", instance, nextVNode);
     instance.vnode = nextVNode;
-    // // 将实例的next属性设置为null
     instance.next = null;
-    // 将实例的props属性设置为下一个vnode的props属性
     instance.props = nextVNode.props;
   }
 
-
-  // 函数processFragment接收四个参数：n1, n2, container, parentComponent, anchor
+  //函数processFragment，用于处理片段，参数n1，n2，container，parentComponent，anchor
   function processFragment(n1, n2: any, container: any, parentComponent, anchor) {
-    // 调用mountChildren函数，传入n2.children, container, parentComponent, anchor参数
+    //调用mountChildren函数，传入n2的children，container，parentComponent，anchor
     mountChildren(n2.children, container, parentComponent, anchor);
   }
 
@@ -438,7 +429,7 @@ export function createRenderer(options) {
   // 参数：n1：文本节点1；n2：文本节点2；container：容器
   function processText(n1, n2: any, container: any) {
     // 创建文本节点
-    const el = n2.el = document.createTextNode(n2.children);
+    const el = (n2.el = document.createTextNode(n2.children));
     // 将文本节点添加到容器中
     container.append(el);
   }
@@ -449,7 +440,6 @@ export function createRenderer(options) {
   // 方法2  return { createApp: createAppAPI(render) };
   return { createApp: createAppAPI(render) };
 }
-
 
 //最长递增自序列 算法 函数getSequence接收一个数组arr，返回一个排序后的数组
 function getSequence(arr) {

@@ -10,7 +10,7 @@ export default {
     window.msg = msg;
 
     const changeChildProps = () => {
-      msg.value = "456" + new Date().getTime();
+      msg.value = "456" + ":" + new Date().getTime();
     };
 
     const changeCount = () => {
