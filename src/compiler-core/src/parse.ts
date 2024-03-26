@@ -100,34 +100,26 @@ function parseElement(context: any, ancestors): any {
   ancestors.push(element);
   element.children = parseChildren(context, ancestors);
   ancestors.pop();
-  console.log("------------");
-  console.log("element.tag", element.tag);
-  console.log("context.source", element.tag, context.source.slice(2, 2 + element.tag.length));
-  if (element.tag === context.source.slice(2, 2 + element.tag.length)) {
+
+  if (startsWithEndTagOpen(context.source, element.tag)) {
+    // 匹配开始标签<div>后，还有去除关闭标签</div>
     parseTag(context, TagType.End);
   } else {
     throw new Error(`缺少结束标签:${element.tag}`);
   }
-  // 匹配开始标签<div>后，还有去除关闭标签</div>
-  // parseTag(context, TagType.End);
-  // if (startsWithEndTagOpen(context.source, element.tag)) {
-  // parseTag(context, TagType.End);
-  // }
+
   return element;
 }
 
-// function startsWithEndTagOpen(source, tag) {
-//   return source.startsWith("</")
-// }
 
 function parseTag(context: any, type: TagType) {
   // const match: any = /^<\/?([a-z]+\w*)/i.exec(context.sources);
   const match: any = /^<\/?([a-z]*)/i.exec(context.source);
   const tag = match[1];
   // 移动光标 ,已经处理的就删除了,  match[0].length + 1 的  +1 是要再加 > d的一个位置
-  // advanceBy(context, match[0].length + 1);
-  advanceBy(context, match[0].length);
-  advanceBy(context, 1);
+  advanceBy(context, match[0].length + 1);
+/*   advanceBy(context, match[0].length);
+  advanceBy(context, 1); */
   if (type === TagType.End) return;
   return { type: NodeTypes.ELEMENT, tag: tag };
 }
@@ -145,12 +137,9 @@ function parseInterpolation(context) {
   advanceBy(context, openDelimiterLength);
   const rawContentLength = closeIndex - openDelimiterLength;
   // 获取内容部分 , 去除'{{' 部分
-  // let rawContent = context.source.slice(0, rawContentLength);
   const rawContent = parseTextData(context, rawContentLength);
-  // advanceBy(context, rawContentLength);
   // 去除空格
-  // const content = rawContent && rawContent.trim();
-  const content = rawContent.trim();
+  const content = rawContent && rawContent.trim();
   advanceBy(context, closeDelimiter.length);
   return {
     // 子节点的类型为 NodeTypes.INTERPOLATION
