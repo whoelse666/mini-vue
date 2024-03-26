@@ -38,7 +38,6 @@ function parseInterpolation(context: any) {
   const closeIndex = context.source.indexOf(closeChar, start);
   advanceBy(context, start);
   const rawContentLength = closeIndex - start;
-  // const rawContent = context.source.slice(start, closeIndex);
   const rawContent = parseTextData(context, rawContentLength);
   advanceBy(context, end);
   const content = rawContent.trim();
