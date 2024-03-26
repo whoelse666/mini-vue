@@ -17,7 +17,6 @@ describe("Parse", () => {
   describe("element", () => {
     it("simple element div", () => {
       const ast = baseParse("<div></div>");
-
       expect(ast.children[0]).toStrictEqual({
         type: NodeTypes.ELEMENT,
         tag: "div",
@@ -57,8 +56,7 @@ describe("Parse", () => {
     });
   });
 
-  //BUG 
-
+  //todo 
   test("Nested element ", () => {
     const ast = baseParse("<div><p>hi</p>{{message}}</div>");
     // console.log(ast.children[0]);
@@ -89,8 +87,9 @@ describe("Parse", () => {
   });
 
   test("should throw error when lack end tag", () => {
+
     expect(() => {
-      baseParse("<div><span></div>");
+      baseParse("<div><span><div></div>");
     }).toThrow(`缺少结束标签:span`);
   });
 })

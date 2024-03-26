@@ -3,22 +3,21 @@ const enum TagType {
   Start,
   End
 }
-
 export function baseParse(content: string) {
   const context = createParserContext(content);
-  return createRoot(parseChildren(context, []));
+  return createRoot(parseChildren(context));
 }
 
-function parseChildren(context: any, ancestors) {
+function parseChildren(context: any) {
   const nodes: any = [];
-  while (!isEnd(context, ancestors)) {
+  while (!isEnd(context)) {
     const s = context.source;
     let node;
     if (s.startsWith("{{")) {
       node = parseInterpolation(context);
     } else if (s[0] === "<") {
       if (/[a-z]/i.test(s[1])) {
-        node = parseElement(context, ancestors);
+        node = parseElement(context);
       }
     }
     if (!node) {
@@ -38,9 +37,10 @@ function parseInterpolation(context: any) {
   const closeIndex = context.source.indexOf(closeChar, start);
   advanceBy(context, start);
   const rawContentLength = closeIndex - start;
-  // const rawContent = context.source.slice(start, closeIndex);
+  // const rawContent = context.source.slice(0, rawContentLength);
   const rawContent = parseTextData(context, rawContentLength);
   advanceBy(context, end);
+  console.log("rawContent---------", rawContent);
   const content = rawContent.trim();
   return {
     type: NodeTypes.INTERPOLATION,
@@ -68,16 +68,16 @@ function advanceBy(content, length) {
   content.source = content.source.slice(length);
 }
 
-function parseElement(context: any, ancestors): any {
+function parseElement(context: any): any {
   // 解析标签
   /* 插值 和  文本 不就有子元素，只有element 有子元素，需要处理子节点 */
   const element: any = parseTag(context, TagType.Start);
   // 解析子节点
-  console.log("context", context);
-  ancestors.push(element);
-  element.children = parseChildren(context, ancestors);
-  ancestors.pop();
-  if (startsWithEndTagOpen(context.source, element.tag)) {
+  element.children = parseChildren(context);
+  const s = context.source;
+  console.log("context1111111111111111111", s,s.slice(2, 2 + element.tag.length).toLowerCase());
+  console.log("context11111111", element.tag);
+  if (s.startsWith("</") && s.slice(2, 2 + element.tag.length).toLowerCase() === element.tag.toLowerCase()) {
     parseTag(context, TagType.End);
   } else {
     throw new Error(`缺少结束标签:${element.tag}`);
@@ -86,11 +86,15 @@ function parseElement(context: any, ancestors): any {
 }
 
 function parseTag(context: any, type: TagType) {
+  if (!context.source) {
+    return;
+  }
   const match: any = /^<\/?([a-z]*)/i.exec(context.source);
   const tag = match[1];
+  advanceBy(context, match[0].length + 1);
   // advanceBy(context, match[0].length);
   // advanceBy(context, 1);
-  advanceBy(context, match[0].length+1);
+
   if (type === TagType.End) return;
 
   return {
@@ -109,9 +113,7 @@ function parseText(context: any): any {
       endIndex = index;
     }
   }
-
   const content = parseTextData(context, endIndex);
-  console.log("content==============", content);
   return {
     type: NodeTypes.TEXT,
     content
@@ -124,19 +126,10 @@ function parseTextData(context: any, length): any {
   return content;
 }
 
-function isEnd(context: any, ancestors) {
+function isEnd(context: any) {
   const s = context.source;
   if (s.startsWith("</")) {
-    for (let i = ancestors.length - 1; i >= 0; i--) {
-      const tag = ancestors[i].tag;
-      if (startsWithEndTagOpen(s, tag)) {
-        return true;
-      }
-    }
+    return true;
   }
   return !s;
-}
-
-function startsWithEndTagOpen(source, tag) {
-  return source.startsWith("</") && source.slice(2, 2 + tag.length).toLowerCase() === tag.toLowerCase();
 }
