@@ -1,7 +1,7 @@
-
-export function transform(root, options) {
+export function transform(root, options = {}) {
   const context = createTransformContext(root, options);
   traverseNode(root, context);
+  createRootCodegen(root);
 }
 
 // 遍历节点
@@ -35,4 +35,8 @@ function createTransformContext(root: any, options: any) {
     root,
     nodeTransforms: options.nodeTransforms || []
   };
+}
+
+function createRootCodegen(root: any) {
+  root.codegenNode = root.children[0];
 }
