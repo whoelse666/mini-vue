@@ -59,5 +59,6 @@ mini-vue 源码以及单元测试;
 39. 实现解析 text 功能
 40. 实现解析三种联合类型
 41. 实现 transform 功能
+42. feat : 实现代码生成 string 类型
 
 
