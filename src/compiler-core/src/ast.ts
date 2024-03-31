@@ -5,5 +5,6 @@ export const enum NodeTypes {
   // 简单表达式
   SIMPLE_EXPRESSION,
   ELEMENT,
-  TEXT
+  TEXT,
+  ROOT
 }

@@ -162,7 +162,8 @@ function advanceBy(context: any, length: number) {
 // 函数createRoot,功能:创建一个具有children属性root
 function createRoot(children) {
   return {
-    children
+    children,
+    type: NodeTypes.ROOT
   };
 }
 // 创建解析上下文
