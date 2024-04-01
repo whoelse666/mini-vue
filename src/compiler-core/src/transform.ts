@@ -7,7 +7,11 @@ export function transform(root, options = {}) {
   createRootCodegen(root);
   root.helpers = [...context.helpers.keys()];
 }
+
+
+// 给 createRootCodegen 函数添加中文注释
 function createRootCodegen(root: any) {
+  // 将 root 的第一个子节点设置为 root.codegenNode
   root.codegenNode = root.children[0];
 }
 
@@ -30,9 +34,11 @@ function traverseNode(node, context) {
   const { nodeTransforms } = context;
   // 遍历节点转换器
   for (let i = 0; i < nodeTransforms.length; i++) {
-    const transform = nodeTransforms[i];
-    if (transform) {
-      transform(node);
+    // todo ：    nodeTransforms === [transformExpression,  transformElement, transformText ]
+    // const transform = nodeTransforms[i];
+    const nodeTransform = nodeTransforms[i];
+    if (nodeTransform) {
+      nodeTransform(node, context);
     }
   }
 

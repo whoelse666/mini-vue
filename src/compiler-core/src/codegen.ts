@@ -1,5 +1,5 @@
 import { NodeTypes } from "./ast";
-import { TO_DISPLAY_STRING, helperMapName } from "./runtimeHelpers";
+import { TO_DISPLAY_STRING, helperMapName, CREATE_ELEMENT_VNODE } from "./runtimeHelpers";
 
 // 拼接 在codegen.ts,数据结构转换在transform.ts
 export function generate(ast) {
@@ -12,11 +12,11 @@ export function generate(ast) {
   const signature = args.join(",");
   genFunctionPreamble(ast, context);
   push(`function ${fnName}( ${signature}){`);
-  push("\n");
-  push("return ");
+  // push("\n");
+  push(" return ");
   genNode(ast.codegenNode, context);
-
-  push("\n}");
+  // push("\n");
+  push("}");
   return context;
 }
 
@@ -30,7 +30,7 @@ function genFunctionPreamble(ast: any, context) {
     push(`const { ${ast.helpers.map(aliasHelper)}} = ${VueBinging} `);
     push("\n");
   }
-  push("return ");
+  push(" return ");
 }
 
 // 创建一个代码生成上下文
@@ -53,7 +53,7 @@ function createCodegenContext() {
 
 // 生成节点函数
 function genNode(node: any, context) {
-  console.log("node,context.code", node, context.code);
+  console.log("000000000", node, context.code);
   switch (node.type) {
     case NodeTypes.TEXT:
       genText(node, context);
@@ -64,23 +64,37 @@ function genNode(node: any, context) {
     case NodeTypes.SIMPLE_EXPRESSION:
       genExpression(node, context);
       break;
+    case NodeTypes.ELEMENT:
+      genElement(node, context);
+      break;
     default:
       break;
   }
+}
+
+function genElement(node: any, context: any) {
+  const { push, helper } = context;
+  console.log('node',node);
+  push(`${helper(CREATE_ELEMENT_VNODE)}('${node.tag}'`);
+  push(")");
 }
 
 function genExpression(node: any, context: any) {
   const { push } = context;
   push(`${node.content}`);
 }
+
+
+// 插值类型
 function genInterpolation(node: any, context: any) {
   const { push, helper } = context;
   push(`${helper(TO_DISPLAY_STRING)}(`);
-  console.log("context.code", context.code);
   genNode(node.content, context);
   push(")");
 }
 
+
+// 文本类型
 function genText(node: any, context: any) {
   const { push } = context;
   push(`'${node.content}'`);
