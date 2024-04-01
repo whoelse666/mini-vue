@@ -33,13 +33,13 @@ describe("codegen", () => {
 
 
 
-  // //  联合类型
-  //  it("Association type", () => {
-  //    const ast: any = baseParse("<div>hi,{{message}}</div>");
-  //    transform(ast, {
-  //      nodeTransforms: [transformExpression, /* transformElement, transformText */]
-  //    });
-  //    const { code } = generate(ast);
-  //    expect(code).toMatchSnapshot();
-  //  });
+  //  联合类型
+  it("Association type", () => {
+     const ast: any = baseParse("<div>hi,{{message}}</div>");
+     transform(ast, {
+       nodeTransforms: [transformExpression, transformElement /* transformText */]
+     });
+     const { code } = generate(ast);
+     expect(code).toMatchSnapshot();
+   });
 });
