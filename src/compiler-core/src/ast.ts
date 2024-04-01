@@ -6,5 +6,6 @@ export const enum NodeTypes {
   SIMPLE_EXPRESSION,
   ELEMENT,
   TEXT,
-  ROOT
+  ROOT,
+  COMPOUND_EXPRESSION
 }

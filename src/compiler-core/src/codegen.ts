@@ -67,8 +67,24 @@ function genNode(node: any, context) {
     case NodeTypes.ELEMENT:
       genElement(node, context);
       break;
+    case NodeTypes.COMPOUND_EXPRESSION:
+      genCompoundExpression(node, context);
+      break;
     default:
       break;
+  }
+}
+
+function genCompoundExpression(node: any, context: any) {
+  const { push } = context;
+  const children = node.children;
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    if (isString(child)) {
+      push(child);
+    } else {
+      genNode(child, context);
+    }
   }
 }
 
@@ -103,7 +119,7 @@ function genNodeList(nodes, context) {
     } else {
       genNode(node, context);
     }
-    if (i < nodes.length-1) {
+    if (i < nodes.length - 1) {
       push(",");
     }
   }
