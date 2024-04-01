@@ -4,6 +4,10 @@ export function isObject(target) {
   return typeof target === "object" && target !== null;
 }
 
+
+export const isString = value => typeof value === "string";
+
+
 // 导出一个函数，用于判断传入的参数是否包含指定的属性
 export const hasChanged = (val, newValue) => {
   // 判断传入的参数是否改变

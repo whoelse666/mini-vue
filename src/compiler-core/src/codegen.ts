@@ -1,5 +1,6 @@
+import { isString } from "../../shared";
 import { NodeTypes } from "./ast";
-import { TO_DISPLAY_STRING, helperMapName } from "./runtimeHelpers";
+import { TO_DISPLAY_STRING, helperMapName, CREATE_ELEMENT_VNODE } from "./runtimeHelpers";
 
 // 拼接 在codegen.ts,数据结构转换在transform.ts
 export function generate(ast) {
@@ -12,11 +13,11 @@ export function generate(ast) {
   const signature = args.join(",");
   genFunctionPreamble(ast, context);
   push(`function ${fnName}( ${signature}){`);
-  push("\n");
-  push("return ");
+  // push("\n");
+  push(" return ");
   genNode(ast.codegenNode, context);
-
-  push("\n}");
+  // push("\n");
+  push("}");
   return context;
 }
 
@@ -30,7 +31,7 @@ function genFunctionPreamble(ast: any, context) {
     push(`const { ${ast.helpers.map(aliasHelper)}} = ${VueBinging} `);
     push("\n");
   }
-  push("return ");
+  push(" return ");
 }
 
 // 创建一个代码生成上下文
@@ -53,7 +54,6 @@ function createCodegenContext() {
 
 // 生成节点函数
 function genNode(node: any, context) {
-  console.log("node,context.code", node, context.code);
   switch (node.type) {
     case NodeTypes.TEXT:
       genText(node, context);
@@ -64,23 +64,69 @@ function genNode(node: any, context) {
     case NodeTypes.SIMPLE_EXPRESSION:
       genExpression(node, context);
       break;
+    case NodeTypes.ELEMENT:
+      genElement(node, context);
+      break;
     default:
       break;
   }
+}
+
+/* 
+const { toDisplayString: _toDisplayString, openBlock: _openBlock, createElementBlock: _createElementBlock } = Vue
+return function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (_openBlock(), _createElementBlock("div", null, "hi," + _toDisplayString(_ctx.message)))
+}
+*/
+function genElement(node: any, context: any) {
+  const { push, helper } = context;
+  const { children, tag, props } = node;
+  // push(`${helper(CREATE_ELEMENT_VNODE)}('${tag}',${props},`);
+  push(`${helper(CREATE_ELEMENT_VNODE)}(`);
+  genNodeList(genNullable([tag, props, children]), context);
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    genNode(child, context);
+    if (i < children.length - 1) {
+      push("+");
+    }
+  }
+  push(")");
+}
+
+function genNodeList(nodes, context) {
+  const { push } = context;
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!node || isString(node)) {
+      push(node);
+    } else {
+      genNode(node, context);
+    }
+    if (i < nodes.length-1) {
+      push(",");
+    }
+  }
+}
+
+function genNullable(args: any[]) {
+  return args.map(arg => arg || null);
 }
 
 function genExpression(node: any, context: any) {
   const { push } = context;
   push(`${node.content}`);
 }
+
+// 插值类型
 function genInterpolation(node: any, context: any) {
   const { push, helper } = context;
   push(`${helper(TO_DISPLAY_STRING)}(`);
-  console.log("context.code", context.code);
   genNode(node.content, context);
   push(")");
 }
 
+// 文本类型
 function genText(node: any, context: any) {
   const { push } = context;
   push(`'${node.content}'`);
