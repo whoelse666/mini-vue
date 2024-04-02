@@ -81,6 +81,7 @@ function genCompoundExpression(node: any, context: any) {
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
     if (isString(child)) {
+      //  中间加入的  " + "
       push(child);
     } else {
       genNode(child, context);
@@ -97,16 +98,19 @@ return function render(_ctx, _cache, $props, $setup, $data, $options) {
 function genElement(node: any, context: any) {
   const { push, helper } = context;
   const { children, tag, props } = node;
-  // push(`${helper(CREATE_ELEMENT_VNODE)}('${tag}',${props},`);
-  push(`${helper(CREATE_ELEMENT_VNODE)}(`);
-  genNodeList(genNullable([tag, props, children]), context);
-  for (let i = 0; i < children.length; i++) {
+  // const child = children[0];
+      push(`${helper(CREATE_ELEMENT_VNODE)}(`);
+    genNodeList(genNullable([tag, props, children]), context);
+/*   push(`${helper(CREATE_ELEMENT_VNODE)}(${tag},${props},`);
+  // 处理后符合类型只有一个children， 真实的children 在 children[0]里面
+  children && genNode(children, context); */
+  /*   for (let i = 0; i < children.length; i++) {
     const child = children[i];
     genNode(child, context);
-    if (i < children.length - 1) {
-      push("+");
-    }
-  }
+    // if (i < children.length - 1) {
+    //   push("+");
+    // }
+  } */
   push(")");
 }
 
@@ -114,7 +118,7 @@ function genNodeList(nodes, context) {
   const { push } = context;
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    if (!node || isString(node)) {
+    if (/* !node || */ isString(node)) {
       push(node);
     } else {
       genNode(node, context);
@@ -126,7 +130,7 @@ function genNodeList(nodes, context) {
 }
 
 function genNullable(args: any[]) {
-  return args.map(arg => arg || null);
+  return args.map(arg => arg || "null");
 }
 
 function genExpression(node: any, context: any) {

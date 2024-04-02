@@ -1,12 +1,13 @@
+export * from "./toDisplayString";
+
+
 // 导出一个函数，用于判断传入的参数是否为对象
 export function isObject(target) {
   // 判断传入的参数类型是否为object，且不为null
   return typeof target === "object" && target !== null;
 }
 
-
 export const isString = value => typeof value === "string";
-
 
 // 导出一个函数，用于判断传入的参数是否包含指定的属性
 export const hasChanged = (val, newValue) => {

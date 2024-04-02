@@ -62,4 +62,6 @@ mini-vue 源码以及单元测试;
 42. 实现代码生成 string 类型
 43. 实现代码生成插值类型
 44. 实现代码生成 element 类型
-45. coding : 实现代码生成三种联合类型 
+45. 实现代码生成三种联合类型 
+46. coding :实现编译 template 成 render 函数
+ 

@@ -9,6 +9,8 @@ import { ShapeFlags } from "../shared/shapeFlag";
 
 export const Fragment = Symbol("Fragment");
 export const Text = Symbol("Text");
+
+export { createVNode as createElementVNode };
 // 导出一个函数，用于创建虚拟节点
 export function createVNode(type, props?, children?) {
   // 打印出type的表格
@@ -36,6 +38,12 @@ export function createVNode(type, props?, children?) {
     vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN;
     //  vnode.shapeFlag = vnode.shapeFlag | ShapeFlags.ARRAY_CHILDREN;
   }
+
+   if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+     if (typeof children === "object") {
+       vnode.shapeFlag |= ShapeFlags.SLOT_CHILDREN;
+     }
+   }
   // 返回vnode对象
   return vnode;
 }
@@ -46,6 +54,9 @@ function getShapeFlag(type: any) {
   return typeof type === "string" ? ShapeFlags.ELEMENT : ShapeFlags.STATEFUL_COMPONENT;
 }
 
+
 export function createTextVNode(str: any) {
   return createVNode(Text, {}, str);
 }
+
+

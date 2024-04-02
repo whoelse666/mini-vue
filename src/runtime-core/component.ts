@@ -11,7 +11,7 @@ export function createComponentInstance(vnode, parent) {
   const component = {
     // 将vnode赋值给组件对象
     vnode,
-    next:null,
+    next: null,
     // 获取vnode的type属性赋值给组件对象
     type: vnode.type,
     setupState: {},
@@ -69,16 +69,24 @@ function handleSetupResult(instance: any, setupResult) {
     // TODO 2. Object
     console.log('setupResult === "object")');
   }
-  finishComponent(instance);
+  finishComponentSetup(instance);
 }
-
+// finishComponentSetup;
 // 函数finishComponent接收一个参数instance，用于完成组件
-function finishComponent(instance: any) {
-  // 如果instance的type属性有render方法，则将instance的render属性设置为instance的type属性的render方法
+function finishComponentSetup(instance: any) {
+  /*   // 如果instance的type属性有render方法，则将instance的render属性设置为instance的type属性的render方法
   if (instance.type.render) {
     //  把 render 提高结构层级,简化调用
     instance.render = instance.type.render;
+  } */
+  const Component = instance.type;
+  if (compiler && !Component.render) {
+    if (Component.template) {
+      Component.render = compiler(Component.template);
+      console.log("Component.render ", Component.render);
+    }
   }
+    instance.render = Component.render;
 }
 
 let currentInstance = null;
@@ -89,4 +97,9 @@ export function getCurrentInstance() {
 /* 在setup 中执行getCurrentInstance 获取当前实例后重置为null ,所以在setup()前后设置instance  和重置  */
 export function setCurrentInstance(instance) {
   currentInstance = instance;
+}
+
+let compiler;
+export function registerRuntimeCompiler(_compiler) {
+  compiler = _compiler;
 }

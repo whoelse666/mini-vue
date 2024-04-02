@@ -16,7 +16,6 @@ describe("computed", () => {
   });
 
 
-  
   it("should computed is lazily", () => {
     const value = reactive({
       foo: 1
