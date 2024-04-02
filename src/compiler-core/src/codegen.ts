@@ -77,7 +77,6 @@ function genNode(node: any, context) {
 
 function genCompoundExpression(node: any, context: any) {
   const { push } = context;
-  console.log("node-----------------", node);
   const children = node.children;
   for (let i = 0; i < children.length; i++) {
     const child = children[i];

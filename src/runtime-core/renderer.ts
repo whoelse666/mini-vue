@@ -80,13 +80,13 @@ export function createRenderer(options) {
     // 更新组件的el
     const el = (n2.el = n1.el);
     console.log("n1,n2", n1, n2);
-    // 比较n1和n2，并调用patchChildren函数
+    // 比较n1和n2,并调用patchChildren函数
     patchChildren(n1, n2, el, parentComponent, anchor);
     // 更新组件的props
     patchProps(el, oldProps, newProps);
   }
 
-  // 比较新旧节点，完成 渲染更新
+  // 比较新旧节点,完成 渲染更新
   function patchChildren(n1, n2, container, parentComponent, anchor) {
     const prevShapeFlag = n1.shapeFlag;
     const { shapeFlag } = n2;
@@ -168,10 +168,10 @@ export function createRenderer(options) {
     }
     console.log("右侧结束:i,e1,e2", i, e1, e2);
 
-    // TODO  新的比老的多创建, 只有新增，无位移
+    // TODO  新的比老的多创建, 只有新增,无位移
     if (i > e1) {
       if (i <= e2) {
-        // 判断条件执行到这里，老的节点已经全部跑完，剩下的是只有新的才有的节点，所以都要新创建
+        // 判断条件执行到这里,老的节点已经全部跑完,剩下的是只有新的才有的节点,所以都要新创建
         // console.log("新的比老的多创建");
         const nextPos = i;
         // const nextPos = e2 + 1;
@@ -194,13 +194,13 @@ export function createRenderer(options) {
         s2 = i;
       const toBePatched = e2 - s2 + 1;
       let patched = 0;
-      // 1. 基于新的 创建 key 映射表，然后循环老的，每一个key 去keyToNewIndexMap 中找，没有的话，就可能为删除（用户传入可能会没有填写key）
+      // 1. 基于新的 创建 key 映射表,然后循环老的,每一个key 去keyToNewIndexMap 中找,没有的话,就可能为删除(用户传入可能会没有填写key)
       const keyToNewIndexMap = new Map();
       const newIndexToOldIndexMap = new Array(toBePatched).fill(0);
       let moved = false,
         maxNewIndexSoFar = 0;
 
-      // 遍历 c2 数组，将 s2 和 e2 之间的元素添加到 keyToNewIndexMap 中
+      // 遍历 c2 数组,将 s2 和 e2 之间的元素添加到 keyToNewIndexMap 中
       for (let i = s2; i <= e2; i++) {
         // 创建 新的tree 的 map 映射
         // 获取 c2 数组中 i 位置的元素
@@ -211,7 +211,7 @@ export function createRenderer(options) {
       // 这里的 s1  此时是 去除首尾部分相同节点后索引位置
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i];
-        // 优化: 新的已经全部比对完，旧的还有，不用继续循环,就删除
+        // 优化: 新的已经全部比对完,旧的还有,不用继续循环,就删除
         if (patched >= toBePatched) {
           hostRemove(prevChild.el);
           continue;
@@ -223,16 +223,16 @@ export function createRenderer(options) {
         } else {
           // 没有key 的比对
           for (let j = s2; j <= e2; j++) {
-            // 循环新的， 一一去和旧prevChild的比对，节点是否新老都存在
+            // 循环新的, 一一去和旧prevChild的比对,节点是否新老都存在
             if (isSameVNodeType(prevChild, c2[j])) {
               // nextINdex 的值是新的节点循环 的 索引,相对于完整列表的索引
               newIndex = j;
-              // 找到后就立马结束 ， 避免不必要的循环
+              // 找到后就立马结束 , 避免不必要的循环
               break;
             }
           }
         }
-        // 以上处理都结束后 nextIndex 还是没有的话 ，就要删除
+        // 以上处理都结束后 nextIndex 还是没有的话 ,就要删除
         if (newIndex === undefined) {
           hostRemove(prevChild.el);
         } else {
@@ -241,21 +241,21 @@ export function createRenderer(options) {
           } else {
             moved = true;
           }
-          // nextIndex - s2 相对于去除首位相同部分，截取中间部分数组 ，在取的索引
-          // newIndex 是新老都有的节点，在新的节点数组里的完整的索引
+          // nextIndex - s2 相对于去除首位相同部分,截取中间部分数组 ,在取的索引
+          // newIndex 是新老都有的节点,在新的节点数组里的完整的索引
           // i 是 老的节点数组的完整索引
-          //这里的赋值 是新旧节点位置索引的隐射关系， i 是获取相对位置关系，i + 1 防止i==0 情况，整体都+ 1 不会影响相对的位置关系；
-          /* fixme :  i 可能是0 ，但是newIndexToOldIndexMap初始化给的值就是 0 ，再给  newIndexToOldIndexMap[x] = 0 在这里就没有意义，所以默认 统一 i+1 防止i == 0 情况 */
+          //这里的赋值 是新旧节点位置索引的隐射关系, i 是获取相对位置关系,i + 1 防止i==0 情况,整体都+ 1 不会影响相对的位置关系;
+          /* fixme :  i 可能是0 ,但是newIndexToOldIndexMap初始化给的值就是 0 ,再给  newIndexToOldIndexMap[x] = 0 在这里就没有意义,所以默认 统一 i+1 防止i == 0 情况 */
           newIndexToOldIndexMap[newIndex - s2] = i + 1;
           patch(prevChild, c2[newIndex], container, parentComponent, null);
           patched++;
         }
       }
-      // 获取新索引序列，如果移动了则从新索引到旧索引映射中获取，否则为空
+      // 获取新索引序列,如果移动了则从新索引到旧索引映射中获取,否则为空
       const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : [];
-      // 反序列循环，是因为需要依赖于后一个节点，insertBefore 插入节点
+      // 反序列循环,是因为需要依赖于后一个节点,insertBefore 插入节点
       let j = increasingNewIndexSequence.length - 1;
-      // 遍历中间部分，需要更新的节点 toBePatched = e2-s2+1
+      // 遍历中间部分,需要更新的节点 toBePatched = e2-s2+1
       for (let i = toBePatched - 1; i >= 0; i--) {
         // 获取下一个节点的索引
         const nextIndex = s2 + i;
@@ -263,17 +263,17 @@ export function createRenderer(options) {
         const nextChild = c2[nextIndex];
         // 获取下一个节点的锚点
         const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null;
-        // 如果新旧索引映射表中该位置的值为0，老节点中没有这个节点，新节点中有，则创建新节点
+        // 如果新旧索引映射表中该位置的值为0,老节点中没有这个节点,新节点中有,则创建新节点
         if (newIndexToOldIndexMap[i] === 0) {
           patch(null, nextChild, container, parentComponent, anchor);
         } else if (moved) {
-          // 如果j小于0或者i不等于增加的新索引序列中的j，则插入新节点
-          //  j < 0 则 最长递增自序列 已经执行完，剩下的就都是要移动的
+          // 如果j小于0或者i不等于增加的新索引序列中的j,则插入新节点
+          //  j < 0 则 最长递增自序列 已经执行完,剩下的就都是要移动的
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
             console.log("移动位置", i, increasingNewIndexSequence[j], nextChild, anchor);
             hostInsert(nextChild.el, container, anchor);
           } else {
-            //  新老都有，并且位置相对位置不变(最长递增自序列)
+            //  新老都有,并且位置相对位置不变(最长递增自序列)
             j--;
           }
         }
@@ -282,7 +282,7 @@ export function createRenderer(options) {
   }
 
   function patchProps(el, oldProps, newProps) {
-    // 更新props 循环新的，比较新旧是否相同
+    // 更新props 循环新的,比较新旧是否相同
     for (const key in newProps) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
@@ -291,7 +291,7 @@ export function createRenderer(options) {
         hostPatchProp(el, key, prevProp, nextProp);
       }
     }
-    // 循环旧的 判断旧的有，新的没有的属性，删除
+    // 循环旧的 判断旧的有,新的没有的属性,删除
     for (const key in oldProps) {
       const prevProp = oldProps[key];
       const nextProp = newProps[key];
@@ -309,6 +309,8 @@ export function createRenderer(options) {
     // 完成对instance 的 初始化处理
     setupComponent(instance);
     //这里已经完成了vnode 的处理,--> 渲染实例
+    console.log("instance", instance);
+
     setupRenderEffect(instance, initialVNode, container, anchor);
   }
 
@@ -380,27 +382,29 @@ export function createRenderer(options) {
     instance.update = effect(
       () => {
         if (!instance.isMounted) {
+          const { proxy } = instance;
+          // instance.render.call(proxy, proxy)   -> 第二个proxy 作为第一个参数_ctx 传递   render(_ctx, _cache, $props, $setup, $data, $options)
           // const subTree = instance.render(); // h()函数返回
-          const subTree = (instance.subTree = instance.render.call(instance.proxy)); // h()函数返回
+          const subTree = (instance.subTree = instance.render.call(proxy, proxy)); // h()函数返回
           patch(null, subTree, container, instance, anchor);
           // 2. $el-> 挂在el
           initialVNode.el = subTree.el;
           instance.isMounted = true;
         } else {
           console.log("update");
-          const { next, vnode } = instance;
+          const { next, vnode, proxy } = instance;
           if (next) {
             next.el = vnode.el;
             updateComponentPreRender(instance, next);
           }
           const prevSubTree = instance.subTree;
-          const subTree = instance.render.call(instance.proxy);
+          const subTree = instance.render.call(proxy, proxy);
           instance.subTree = subTree;
           patch(prevSubTree, subTree, container, instance, anchor);
         }
       },
       {
-        //  当effect 执行的时候，如果options中有scheduler，则执行scheduler,不执行fn，fn需要手动执行
+        //  当effect 执行的时候,如果options中有scheduler,则执行scheduler,不执行fn,fn需要手动执行
         scheduler() {
           queueJobs(instance.update);
         }
@@ -415,14 +419,14 @@ export function createRenderer(options) {
     instance.props = nextVNode.props;
   }
 
-  //函数processFragment，用于处理片段，参数n1，n2，container，parentComponent，anchor
+  //函数processFragment,用于处理片段,参数n1,n2,container,parentComponent,anchor
   function processFragment(n1, n2: any, container: any, parentComponent, anchor) {
-    //调用mountChildren函数，传入n2的children，container，parentComponent，anchor
+    //调用mountChildren函数,传入n2的children,container,parentComponent,anchor
     mountChildren(n2.children, container, parentComponent, anchor);
   }
 
-  // 功能：处理文本节点
-  // 参数：n1：文本节点1；n2：文本节点2；container：容器
+  // 功能:处理文本节点
+  // 参数:n1:文本节点1;n2:文本节点2;container:容器
   function processText(n1, n2: any, container: any) {
     // 创建文本节点
     const el = (n2.el = document.createTextNode(n2.children));
@@ -437,11 +441,11 @@ export function createRenderer(options) {
   return { createApp: createAppAPI(render) };
 }
 
-//最长递增自序列 算法 函数getSequence接收一个数组arr，返回一个排序后的数组
+//最长递增自序列 算法 函数getSequence接收一个数组arr,返回一个排序后的数组
 function getSequence(arr) {
-  // 复制arr数组，并赋值给p
+  // 复制arr数组,并赋值给p
   const p = arr.slice();
-  // 定义一个结果数组，第一个元素为0
+  // 定义一个结果数组,第一个元素为0
   const result = [0];
   // 定义i,j,u,v,c变量
   let i, j, u, v, c;
@@ -453,7 +457,7 @@ function getSequence(arr) {
     const arrI = arr[i];
     // 如果arr数组中第i个元素不为0
     if (arrI !== 0) {
-      // 获取result数组中最后一个元素，赋值给j
+      // 获取result数组中最后一个元素,赋值给j
       j = result[result.length - 1];
       // 如果arr数组中第j个元素小于arr数组中第i个元素
       if (arr[j] < arrI) {
@@ -467,9 +471,9 @@ function getSequence(arr) {
       // 定义u和v变量
       u = 0;
       v = result.length - 1;
-      // 当u小于v时，执行循环
+      // 当u小于v时,执行循环
       while (u < v) {
-        // 计算u和v的中间值，赋值给c
+        // 计算u和v的中间值,赋值给c
         c = (u + v) >> 1;
         // 如果arr数组中第result数组中第c个元素小于arr数组中第i个元素
         if (arr[result[c]] < arrI) {
@@ -482,7 +486,7 @@ function getSequence(arr) {
       }
       // 如果arr数组中第result数组中第u个元素小于arr数组中第i个元素
       if (arrI < arr[result[u]]) {
-        // 如果u大于0，将arr数组中第result数组中第u-1个元素的值赋值给p数组中第i个元素
+        // 如果u大于0,将arr数组中第result数组中第u-1个元素的值赋值给p数组中第i个元素
         if (u > 0) {
           p[i] = result[u - 1];
         }
@@ -493,9 +497,9 @@ function getSequence(arr) {
   }
   // 获取result数组的长度
   u = result.length;
-  // 获取result数组中最后一个元素，赋值给v
+  // 获取result数组中最后一个元素,赋值给v
   v = result[u - 1];
-  // 当u大于0时，执行循环
+  // 当u大于0时,执行循环
   while (u-- > 0) {
     // 将v的值赋值给result数组中第u个元素
     result[u] = v;

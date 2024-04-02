@@ -19,7 +19,6 @@ export function transformElement(node, context) {
         };
         node.codegenNode = vnodeElement; */
       node.codegenNode = createVNodeCall(context, vnodeTag, vnodeProps, vnodeChildren);
-      console.log("transformElement====================", node);
     }
   };
 }
