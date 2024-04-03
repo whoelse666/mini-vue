@@ -4,8 +4,8 @@
   "description": "mini-vue源码以及单元测试",
   "license": "MIT",
   "main": "index.js",
-  "cjs": "./lib/guide-mini-vue.cjs.js",
-  "esm": "./lib/guide-mini-vue.esm.js",
+  "cjs": "./lib/mini-vue.cjs.js",
+  "esm": "./lib/mini-vue.esm.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
