@@ -1,7 +1,7 @@
 // 老的是 array
 // 新的是 text
 
-import { ref, h } from "../../dist/mini-vue.esm-bundler.js";
+import { ref, h } from "../../dist/mini-vue.esm.js";
 const nextChildren = "newChildren";
 const prevChildren = [h("div", {}, "A"), h("div", {}, "B")];
 

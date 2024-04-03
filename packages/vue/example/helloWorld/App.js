@@ -1,31 +1,51 @@
-import { h, ref } from "../../dist/mini-vue.esm-bundler.js";
+import { h } from "../../dist/mini-vue.esm.js";
+import { Foo } from "./Foo.js";
 
-const count = ref(0);
-
-const HelloWorld = {
-  name: "HelloWorld",
-  setup() {},
-  // TODO 第一个小目标
-  // 可以在使用 template 只需要有一个插值表达式即
-  // 可以解析 tag 标签
-  // template: `
-  //   <div>hi {{msg}}</div>
-  //   需要编译成 render 函数
-  // `,
+export const App = {
   render() {
+    window.self = this;
     return h(
       "div",
-      { tId: "helloWorld" },
-      `hello world: count: ${count.value}`
+      {
+        id: "root",
+        class: "hard"
+      },
+      // "hi, " + this.msg
+      // string
+      // "hi, mini-vue"
+      // Array
+      [
+        h(Foo, {
+          count: 1
+        }),
+        h("ol", { class: "red" }, "hi"),
+        h(
+          "p",
+          {
+            class: "blue",
+            onClick: () => {
+              console.log("click");
+            },
+            onMousedown: () => {
+              console.log("onmousedown");
+            }
+          },
+          "mini-vue" + this.msg
+        ),
+        h(
+          "ul",
+          {
+            class: "test"
+          },
+          [h("span", null, "test666")]
+        )
+      ]
     );
   },
-};
 
-export default {
-  name: "App",
-  setup() {},
-
-  render() {
-    return h("div", { tId: 1 }, [h("p", {}, "主页"), h(HelloWorld)]);
-  },
+  setup() {
+    return {
+      msg: "代理值"
+    };
+  }
 };

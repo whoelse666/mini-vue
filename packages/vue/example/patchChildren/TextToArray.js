@@ -1,6 +1,6 @@
 // 新的是 array
 // 老的是 text
-import { ref, h } from "../../dist/mini-vue.esm-bundler.js";
+import { ref, h } from "../../dist/mini-vue.esm.js";
 
 const prevChildren = "oldChild";
 const nextChildren = [h("div", {}, "A"), h("div", {}, "B")];
@@ -17,7 +17,6 @@ export default {
   },
   render() {
     const self = this;
-    console.log("?????????")
 
     return self.isChange === true
       ? h("div", {}, nextChildren)

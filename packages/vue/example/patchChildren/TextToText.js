@@ -1,6 +1,6 @@
 // 新的是 text
 // 老的是 text
-import { ref, h } from "../../dist/mini-vue.esm-bundler.js";
+import { ref, h } from "../../dist/mini-vue.esm.js";
 
 const prevChildren = "oldChild";
 const nextChildren = "newChild";

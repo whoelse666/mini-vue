@@ -1,20 +1,23 @@
-// 在 render 中使用 proxy 调用 emit 函数
-// 也可以直接使用 this
-// 验证 proxy 的实现逻辑
-import { h, ref } from "../../dist/mini-vue.esm-bundler.js";
+import { h, ref } from "../../dist/mini-vue.esm.js";
 import Child from "./Child.js";
 
 export default {
   name: "App",
   setup() {
     const msg = ref("123");
-    window.msg = msg
+    const count = ref(1);
+
+    window.msg = msg;
 
     const changeChildProps = () => {
-      msg.value = "456";
+      msg.value = "456" + ":" + new Date().getTime();
     };
 
-    return { msg, changeChildProps };
+    const changeCount = () => {
+      count.value++;
+    };
+
+    return { msg, changeChildProps, changeCount, count };
   },
 
   render() {
@@ -23,13 +26,21 @@ export default {
       h(
         "button",
         {
-          onClick: this.changeChildProps,
+          onClick: this.changeChildProps
         },
         "change child props"
       ),
       h(Child, {
-        msg: this.msg,
+        msg: this.msg
       }),
+      h(
+        "button",
+        {
+          onClick: this.changeCount
+        },
+        "change self count"
+      ),
+      h("p", {}, "count: " + this.count)
     ]);
-  },
+  }
 };
