@@ -1,10 +1,12 @@
 // export { createApp } from "./createApp";
+export { h } from "./h";
 export { renderSlots } from "./renderSlots";
 export { createTextVNode,createElementVNode } from "./vnode";
 export { getCurrentInstance, registerRuntimeCompiler } from "./component";
-export { h } from "./h";
 export { provide, inject } from "./apiInject";
 // export { createApp } from "../runtime-dom";
 export { createRenderer } from "./renderer";
 export { nextTick } from "./scheduler";
+
 export { toDisplayString } from "@mini-vue/shared";
+export * from "@mini-vue/reactivity";
