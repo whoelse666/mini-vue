@@ -63,5 +63,7 @@ mini-vue 源码以及单元测试;
 43. 实现代码生成插值类型
 44. 实现代码生成 element 类型
 45. 实现代码生成三种联合类型 
-46. coding :实现编译 template 成 render 函数
+46. 实现编译 template 成 render 函数
+47. 实现 monorepo
+47-1.coding :  使用 vitest 替换 jest
  

@@ -4,43 +4,84 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-devDependencies:
-  '@babel/core':
-    specifier: ^7.23.9
-    version: 7.23.9
-  '@babel/preset-env':
-    specifier: ^7.23.9
-    version: 7.23.9(@babel/core@7.23.9)
-  '@babel/preset-typescript':
-    specifier: ^7.23.3
-    version: 7.23.3(@babel/core@7.23.9)
-  '@rollup/plugin-json':
-    specifier: ^6.1.0
-    version: 6.1.0(rollup@4.12.0)
-  '@rollup/plugin-typescript':
-    specifier: ^11.1.6
-    version: 11.1.6(rollup@4.12.0)(tslib@2.6.2)(typescript@5.3.3)
-  '@types/jest':
-    specifier: ^29.5.12
-    version: 29.5.12
-  babel-jest:
-    specifier: ^29.7.0
-    version: 29.7.0(@babel/core@7.23.9)
-  jest:
-    specifier: ^29.7.0
-    version: 29.7.0
-  rollup:
-    specifier: ^4.12.0
-    version: 4.12.0
-  tslib:
-    specifier: ^2.6.2
-    version: 2.6.2
-  typescript:
-    specifier: ^5.3.3
-    version: 5.3.3
-  vitest:
-    specifier: ^1.3.1
-    version: 1.3.1
+importers:
+
+  .:
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.23.9
+        version: 7.23.9
+      '@babel/preset-env':
+        specifier: ^7.23.9
+        version: 7.23.9(@babel/core@7.23.9)
+      '@babel/preset-typescript':
+        specifier: ^7.23.3
+        version: 7.23.3(@babel/core@7.23.9)
+      '@rollup/plugin-json':
+        specifier: ^6.1.0
+        version: 6.1.0(rollup@4.12.0)
+      '@rollup/plugin-typescript':
+        specifier: ^11.1.6
+        version: 11.1.6(rollup@4.12.0)(tslib@2.6.2)(typescript@5.3.3)
+      '@types/jest':
+        specifier: ^29.5.12
+        version: 29.5.12
+      babel-jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@babel/core@7.23.9)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0
+      rollup:
+        specifier: ^4.12.0
+        version: 4.12.0
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+      vitest:
+        specifier: ^1.3.1
+        version: 1.3.1
+
+  packages/compiler-core:
+    dependencies:
+      '@mini-vue/shared':
+        specifier: workspace:^1.0.0
+        version: link:../shared
+
+  packages/reactivity:
+    dependencies:
+      '@mini-vue/shared':
+        specifier: workspace:^1.0.0
+        version: link:../shared
+
+  packages/runtime-core:
+    dependencies:
+      '@mini-vue/reactivity':
+        specifier: workspace:^1.0.0
+        version: link:../reactivity
+      '@mini-vue/shared':
+        specifier: workspace:^1.0.0
+        version: link:../shared
+
+  packages/runtime-dom:
+    dependencies:
+      '@mini-vue/runtime-core':
+        specifier: workspace:^1.0.0
+        version: link:../runtime-core
+
+  packages/shared: {}
+
+  packages/vue:
+    dependencies:
+      '@mini-vue/compiler-core':
+        specifier: workspace:^1.0.0
+        version: link:../compiler-core
+      '@mini-vue/runtime-dom':
+        specifier: workspace:^1.0.0
+        version: link:../runtime-dom
 
 packages:
 
