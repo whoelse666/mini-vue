@@ -1,9 +1,9 @@
 /* createRenderer 作用： 可以让用户 传入不同的 
 函数执行不同平台的api， 
 */
+
 import { createRenderer } from "@mini-vue/runtime-core";
 // export { registerRuntimeCompiler } from "@mini-vue/runtime-core";
-export * from "@mini-vue/runtime-core";
 // 创建一个函数，用于创建元素
 export function createElement(type) {
   // 返回创建的元素
@@ -70,3 +70,4 @@ export function createApp(...args) {
 export function createApp(...args) {
   return renderObj.createApp(...args);
 }
+export * from "@mini-vue/runtime-core";
