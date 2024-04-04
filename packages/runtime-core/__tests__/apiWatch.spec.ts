@@ -1,6 +1,7 @@
-import { reactive } from "../../reactivity";
-import { watchEffect } from "../apiWatch";
-import { nextTick } from "../scheduler";
+import { reactive } from "@mini-vue/reactivity";
+import { nextTick } from "../src/scheduler";
+import { vi } from "vitest";
+import { watchEffect } from "../src/apiWatch";
 
 describe("api: watch", () => {
   it("effect", async () => {
@@ -33,8 +34,7 @@ describe("api: watch", () => {
 
   it("cleanup registration (effect)", async () => {
     const state = reactive({ count: 0 });
-    // const cleanup = vi.fn();
-    const cleanup = jest.fn();
+    const cleanup = vi.fn();
     let dummy;
     const stop: any = watchEffect(onCleanup => {
       onCleanup(cleanup);

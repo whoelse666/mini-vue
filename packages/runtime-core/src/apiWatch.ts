@@ -1,5 +1,5 @@
 
-import { ReactiveEffect }  from "../reactivity";
+import { ReactiveEffect } from "@mini-vue/reactivity";
 import { queuePreFlushCb } from "./scheduler";
 
 export function watchEffect(source) {

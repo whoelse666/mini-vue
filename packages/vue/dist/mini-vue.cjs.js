@@ -602,8 +602,9 @@ function createAppAPI(render) {
 
 const p = Promise.resolve();
 const queue = [];
+const activePreFlushCbs = [];
 function nextTick(fn) {
-    console.log("nextTick");
+    return fn ? p.then(fn) : p;
 }
 /*
 args   job ===  instance.update === effect.run
@@ -628,16 +629,20 @@ function queueFlush() {
     flushJobs();
 }
 function flushJobs() {
-    p.then(() => {
-        // 执行到这里后，重置 isFlushPending 为 false，表示当前没有在执行队列中的任务
-        isFlushPending = false;
-        let job;
-        console.log("queue.length", queue.length);
-        //  queue.shift() 返回 队列中的第一个作业，并将其从队列中删除
-        while ((job = queue.shift())) {
-            job && job();
-        }
-    });
+    // 执行到这里后，重置 isFlushPending 为 false，表示当前没有在执行队列中的任务
+    isFlushPending = false;
+    flushPreFlushCbs();
+    let job;
+    console.log("queue.length", queue.length);
+    //  queue.shift() 返回 队列中的第一个作业，并将其从队列中删除
+    while ((job = queue.shift())) {
+        job && job();
+    }
+}
+function flushPreFlushCbs() {
+    for (let i = 0; i < activePreFlushCbs.length; i++) {
+        activePreFlushCbs[i]();
+    }
 }
 
 function createRenderer(options) {
@@ -1200,6 +1205,7 @@ function createApp(...args) {
 
 var runtimeDom = /*#__PURE__*/Object.freeze({
     __proto__: null,
+    ReactiveEffect: ReactiveEffect,
     createApp: createApp,
     createElement: createElement,
     createElementVNode: createVNode,
@@ -1700,6 +1706,7 @@ function compileToFunction(template, options = {}) {
 }
 registerRuntimeCompiler(compileToFunction);
 
+exports.ReactiveEffect = ReactiveEffect;
 exports.createApp = createApp;
 exports.createElement = createElement;
 exports.createElementVNode = createVNode;
