@@ -131,4 +131,4 @@ export function triggerEffects(dep) {
       effect.run();
     }
   }
-}
+};
